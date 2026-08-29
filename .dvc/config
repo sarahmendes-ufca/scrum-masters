@@ -1,4 +1,4 @@
 [core]
     remote = local_remote
 ['remote "local_remote"']
-    url = /home/inversrasp/dvc-storage
+    url = ssh://inversrasp@100.95.153.33/home/inversrasp/dvc-storage
