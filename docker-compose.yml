@@ -22,7 +22,6 @@ services:
 
     environment:
       - MODEL_NAME=yolov8n.pt
-      - MODELS_DIR=/app/models
 
     networks:
       - yolo-net

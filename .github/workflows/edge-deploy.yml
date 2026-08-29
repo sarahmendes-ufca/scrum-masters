@@ -1,0 +1,226 @@
+# .github/workflows/edge-deploy.yml
+# Pipeline completo: lint → testes → build ARM64 → quality gate → deploy
+
+
+name: Edge AI — Build, Test e Deploy
+
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+
+env:
+  REGISTRY:    ghcr.io
+  IMAGE_NAME:  ${{ github.repository }}/yolo-api
+
+
+jobs:
+
+
+  # ─────────────────────────────────────────────────────────
+  # JOB 1: Lint e testes unitários / smoke / integration
+  # Runner: ubuntu-latest (x86_64, gratuito no GitHub)
+  # ─────────────────────────────────────────────────────────
+  test:
+    name: "Lint & Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Conecta à rede Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+
+      - name: Instalar dependências
+        run: |
+          pip install -r app/requirements.txt
+          pip install pytest ruff
+
+
+      - name: Download modelo para testes
+        run: |
+          pip install "dvc[ssh]"
+          mkdir -p ~/.ssh
+          echo "${{ secrets.RPI_SSH_KEY }}" | tr -d '\r' > ~/.ssh/dvc_key
+          chmod 600 ~/.ssh/dvc_key
+          dvc remote modify --local local_remote keyfile ~/.ssh/dvc_key
+          dvc pull
+
+
+      - name: Disponibiliza o modelo em /app/models (mesmo path usado no Docker)
+        run: |
+          sudo mkdir -p /app
+          sudo ln -sfn "$GITHUB_WORKSPACE/models" /app/models
+          ls -la /app/models
+
+
+      - name: Lint (ruff)
+        run: ruff check app/
+
+
+      - name: Testes automatizados
+        run: pytest tests/ -v --tb=short
+
+
+
+
+  # ─────────────────────────────────────────────────────────
+  # JOB 2: Build da imagem Docker multi-arquitetura
+  # Plataforma: linux/arm64 (rpicam-apps-lite não existe para amd64)
+  # ─────────────────────────────────────────────────────────
+  build:
+    name: "Build & Push (ARM64)"
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Configurar QEMU (emulação ARM64)
+        uses: docker/setup-qemu-action@v3
+
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+
+      - name: Login no GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Extrair metadados da imagem
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+
+      - name: Build e Push (multi-arch)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.api
+          platforms: linux/arm64
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to:   type=gha,mode=max
+
+
+
+
+  # ─────────────────────────────────────────────────────────
+  # JOB 3: Quality gate do modelo
+  # Valida mAP@0.5 antes de autorizar o deploy
+  # ─────────────────────────────────────────────────────────
+  model-gate:
+    name: "Model Quality Gate"
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Conecta à rede Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+
+      - name: Instalar dependências
+        run: pip install ultralytics "dvc[ssh]"
+
+
+      - name: Recuperar modelo via DVC
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.RPI_SSH_KEY }}" | tr -d '\r' > ~/.ssh/dvc_key
+          chmod 600 ~/.ssh/dvc_key
+          dvc remote modify --local local_remote keyfile ~/.ssh/dvc_key
+          dvc pull
+
+
+      - name: Executar quality gate (mAP@0.5 >= 0.50)
+        run: python scripts/validate_model.py --threshold 0.50
+
+
+
+
+  # ─────────────────────────────────────────────────────────
+  # JOB 4: Deploy no Raspberry Pi 5 via SSH
+  # Executa apenas em push para main (não em PRs)
+  # ─────────────────────────────────────────────────────────
+  deploy:
+    name: "Deploy → Raspberry Pi 5"
+    needs: model-gate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Conecta à rede Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+
+      - name: Deploy via SSH com rollback automático
+        uses: appleboy/ssh-action@v1
+        with:
+          host:     ${{ secrets.RPI_HOST }}
+          username: ${{ secrets.RPI_USER }}
+          key:      ${{ secrets.RPI_SSH_KEY }}
+          command_timeout: 30m
+          script: |
+            export DEPLOY_PATH=${{ secrets.RPI_DEPLOY_PATH }}
+            cd $DEPLOY_PATH
+            git pull origin main
+            bash scripts/deploy.sh
+
+
+      - name: Notificar resultado
+        if: always()
+        run: |
+          echo "Deploy status: ${{ job.status }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Triggered by: ${{ github.actor }}"
