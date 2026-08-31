@@ -1,9 +1,11 @@
 import asyncio
 import base64
 import io
+import json
 import logging
 import subprocess
 import time
+import uuid
 
 import cv2
 import httpx
@@ -22,77 +24,15 @@ from schemas import (
     PredictResponse,
 )
 
-# Adicionar após os imports existentes em app/main.py
-
-
-import json
-import uuid
-
-
 def log_event(event: str, level: str = "INFO", **kwargs):
     """Emite um evento estruturado em JSON para stdout."""
-    import time
     record = {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "level":     level,
-        "event":     event,
+        "level": level,
+        "event": event,
         **kwargs,
     }
     print(json.dumps(record, ensure_ascii=False), flush=True)
-
-Em seguida, adicione chamadas de log nos dois endpoints principais:
-# No endpoint /predict, substitua o bloco try...except por:
-
-
-@app.post("/predict", response_model=PredictResponse)
-def predict(request: PredictRequest):
-    request_id = str(uuid.uuid4())[:8]
-    _metrics["total"] += 1
-
-
-    log_event("predict_start",
-              request_id=request_id,
-              model=request.model_name,
-              confidence=request.confidence)
-
-
-    if not request.image_base64 and not request.image_url:
-        log_event("predict_error", level="WARN",
-                  request_id=request_id, reason="missing_input")
-        raise HTTPException(status_code=422,
-            detail="Forneça image_base64 ou image_url.")
-    try:
-        if request.image_base64:
-            img = _decode_image(request.image_base64)
-        else:
-            import httpx
-            resp = httpx.get(request.image_url, timeout=10)
-            resp.raise_for_status()
-            img = _decode_image(base64.b64encode(resp.content).decode())
-
-
-        result = _run_inference(img, request.model_name, request.confidence)
-        _metrics["success"] += 1
-        _metrics["total_ms"] += result.inference_ms
-
-
-        log_event("predict_complete",
-                  request_id=request_id,
-                  model=result.model_used,
-                  detections=len(result.detections),
-                  inference_ms=result.inference_ms,
-                  image_size=f"{result.image_width}x{result.image_height}")
-        return result
-
-
-    except FileNotFoundError as e:
-        log_event("predict_error", level="ERROR",
-                  request_id=request_id, reason=str(e))
-        raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
-        log_event("predict_error", level="ERROR",
-                  request_id=request_id, reason=str(e))
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 logger = logging.getLogger(__name__)
@@ -256,6 +196,84 @@ def _run_inference(
     )
 
 
+
+@app.post("/predict", response_model=PredictResponse)
+def predict(request: PredictRequest):
+    request_id = str(uuid.uuid4())[:8]
+    _metrics["total"] += 1
+
+    log_event(
+        "predict_start",
+        request_id=request_id,
+        model=request.model_name,
+        confidence=request.confidence,
+    )
+
+    if not request.image_base64 and not request.image_url:
+        log_event(
+            "predict_error",
+            level="WARN",
+            request_id=request_id,
+            reason="missing_input",
+        )
+        raise HTTPException(
+            status_code=422,
+            detail="Forneça image_base64 ou image_url.",
+        )
+
+    try:
+        if request.image_base64:
+            img = _decode_image(request.image_base64)
+        else:
+            resp = httpx.get(
+                request.image_url,
+                timeout=10.0,
+                follow_redirects=True,
+            )
+            resp.raise_for_status()
+            img = _decode_image(
+                base64.b64encode(resp.content).decode()
+            )
+
+        result = _run_inference(
+            img,
+            request.model_name,
+            request.confidence,
+        )
+        _metrics["success"] += 1
+        _metrics["total_ms"] += result.inference_ms
+
+        log_event(
+            "predict_complete",
+            request_id=request_id,
+            model=result.model_used,
+            detections=len(result.detections),
+            inference_ms=result.inference_ms,
+            image_size=(
+                f"{result.image_width}x{result.image_height}"
+            ),
+        )
+        return result
+
+    except HTTPException:
+        raise
+    except FileNotFoundError as e:
+        log_event(
+            "predict_error",
+            level="ERROR",
+            request_id=request_id,
+            reason=str(e),
+        )
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    except Exception as e:
+        log_event(
+            "predict_error",
+            level="ERROR",
+            request_id=request_id,
+            reason=str(e),
+        )
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
 # ── Endpoints Originais ─────────────────────────────────────
 
 @app.get("/health", response_model=HealthResponse)
@@ -274,41 +292,6 @@ async def health_check():
         model_loaded=loaded,
         model_name=model_name,
     )
-
-
-@app.post("/predict", response_model=PredictResponse)
-def predict(request: PredictRequest):
-    _metrics["total"] += 1
-
-    try:
-        img = _load_image_from_request(request)
-
-        result = _run_inference(
-            img,
-            request.model_name,
-            request.confidence,
-        )
-
-        _metrics["success"] += 1
-        _metrics["total_ms"] += result.inference_ms
-
-        return result
-
-    except HTTPException:
-        raise
-
-    except FileNotFoundError as e:
-        raise HTTPException(
-            status_code=404,
-            detail=str(e),
-        ) from e
-
-    except Exception as e:
-        logger.exception("Erro inesperado em /predict")
-        raise HTTPException(
-            status_code=500,
-            detail=str(e),
-        ) from e
 
 
 @app.post(
