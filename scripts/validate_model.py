@@ -7,7 +7,6 @@ import argparse
 import sys
 from pathlib import Path
 
-
 # Limiar padrão de qualidade
 DEFAULT_THRESHOLD = 0.50
 
@@ -52,11 +51,11 @@ def main():
 
 
     if map50 < args.threshold:
-        print(f"[FALHA] mAP abaixo do limiar. Deploy bloqueado.")
+        print("[FALHA] mAP abaixo do limiar. Deploy bloqueado.")
         sys.exit(1)
 
 
-    print(f"[OK] Quality gate aprovado. Deploy autorizado.")
+    print("[OK] Quality gate aprovado. Deploy autorizado.")
 
 
 

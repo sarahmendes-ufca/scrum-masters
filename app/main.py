@@ -24,6 +24,7 @@ from schemas import (
     PredictResponse,
 )
 
+
 def log_event(event: str, level: str = "INFO", **kwargs):
     """Emite um evento estruturado em JSON para stdout."""
     record = {
