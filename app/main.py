@@ -22,6 +22,79 @@ from schemas import (
     PredictResponse,
 )
 
+# Adicionar após os imports existentes em app/main.py
+
+
+import json
+import uuid
+
+
+def log_event(event: str, level: str = "INFO", **kwargs):
+    """Emite um evento estruturado em JSON para stdout."""
+    import time
+    record = {
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "level":     level,
+        "event":     event,
+        **kwargs,
+    }
+    print(json.dumps(record, ensure_ascii=False), flush=True)
+
+Em seguida, adicione chamadas de log nos dois endpoints principais:
+# No endpoint /predict, substitua o bloco try...except por:
+
+
+@app.post("/predict", response_model=PredictResponse)
+def predict(request: PredictRequest):
+    request_id = str(uuid.uuid4())[:8]
+    _metrics["total"] += 1
+
+
+    log_event("predict_start",
+              request_id=request_id,
+              model=request.model_name,
+              confidence=request.confidence)
+
+
+    if not request.image_base64 and not request.image_url:
+        log_event("predict_error", level="WARN",
+                  request_id=request_id, reason="missing_input")
+        raise HTTPException(status_code=422,
+            detail="Forneça image_base64 ou image_url.")
+    try:
+        if request.image_base64:
+            img = _decode_image(request.image_base64)
+        else:
+            import httpx
+            resp = httpx.get(request.image_url, timeout=10)
+            resp.raise_for_status()
+            img = _decode_image(base64.b64encode(resp.content).decode())
+
+
+        result = _run_inference(img, request.model_name, request.confidence)
+        _metrics["success"] += 1
+        _metrics["total_ms"] += result.inference_ms
+
+
+        log_event("predict_complete",
+                  request_id=request_id,
+                  model=result.model_used,
+                  detections=len(result.detections),
+                  inference_ms=result.inference_ms,
+                  image_size=f"{result.image_width}x{result.image_height}")
+        return result
+
+
+    except FileNotFoundError as e:
+        log_event("predict_error", level="ERROR",
+                  request_id=request_id, reason=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        log_event("predict_error", level="ERROR",
+                  request_id=request_id, reason=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
