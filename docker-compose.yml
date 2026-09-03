@@ -5,56 +5,66 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.api
-
     container_name: yolo-api
-
     ports:
       - "8000:8000"
-
     privileged: true # Permite acesso aos nós de mídia e DMA da câmera
-
     volumes:
       - ./models:/app/models:ro # Pesos somente-leitura
       - ./output:/app/output # Resultados gravados aqui
       - ./images:/app/images:ro # Imagens de teste
       - /dev:/dev # Mapeia dispositivos de hardware do host
       - /run/udev:/run/udev:ro # Permite ao libcamera identificar o sensor via udev
-
     environment:
       - MODEL_NAME=yolov8n.pt
-
+      - ROBOFLOW_API_KEY=${ROBOFLOW_API_KEY}
     networks:
       - yolo-net
-
     restart: unless-stopped
-
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 15s
       timeout: 5s
       retries: 3
-
   yolo-client:
     build:
       context: .
       dockerfile: Dockerfile.client
-
     container_name: yolo-client
-
     volumes:
       - ./images:/client/images:ro
       - ./output:/client/output
-
     environment:
       - API_URL=http://yolo-api:8000
-
     networks:
       - yolo-net
-
     depends_on:
       yolo-api:
         condition: service_healthy
-
+  yolo-stream:
+    build:
+      context: .
+      dockerfile: Dockerfile.api    # reutiliza a mesma base ARM64
+    container_name: yolo-stream
+    ports:
+      - "5000:5000"
+    privileged: true              # mesmo acesso à câmera do yolo-api
+    volumes:
+      - ./stream:/app/stream        # código do módulo de streaming
+      - ./models:/app/models:ro     # pesos do modelo (read-only)
+      - /dev:/dev                   # dispositivos de hardware do host
+      - /run/udev:/run/udev:ro      # permite ao libcamera identificar o sensor via udev
+    environment:
+      - MODEL_NAME=yolov8n.pt
+    command: >
+      python3 stream/mjpeg_server.py
+      --device 0
+      --infer-every 3
+      --infer-size 320
+      --port 5000
+    restart: unless-stopped
+    depends_on:
+      - yolo-api
 networks:
   yolo-net:
     driver: bridge

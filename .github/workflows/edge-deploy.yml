@@ -175,10 +175,14 @@ jobs:
           chmod 600 ~/.ssh/dvc_key
           dvc remote modify --local local_remote keyfile ~/.ssh/dvc_key
           dvc pull
-
-
-      - name: Executar quality gate (mAP@0.5 >= 0.50)
-        run: python scripts/validate_model.py --threshold 0.50
+      - name: Recuperar dataset via DVC
+        run: dvc pull dataset/exports/epi-v1
+      - name: Executar quality gate com dataset customizado
+        run: |
+          python scripts/validate_model.py \
+            --model models/yolo-epi.pt \
+            --dataset dataset/exports/epi-v1/data.yaml \
+            --threshold 0.60
 
 
 
