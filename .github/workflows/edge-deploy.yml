@@ -180,7 +180,7 @@ jobs:
       - name: Executar quality gate com dataset customizado
         run: |
           python scripts/validate_model.py \
-            --model models/yolo-epi.pt \
+            --model models/yolov8n.pt \
             --dataset dataset/exports/epi-v1/data.yaml \
             --threshold 0.60
 
