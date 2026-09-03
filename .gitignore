@@ -16,7 +16,6 @@ __pycache__/
 
 # Imagens de teste grandes
 images/
-dataset/raw*
 
 # Variáveis de ambiente locais
 .env
