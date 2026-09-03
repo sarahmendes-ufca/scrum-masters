@@ -1,0 +1,15 @@
+names:
+- hard_hat
+- shoes
+- vest
+nc: 3
+roboflow:
+  license: CC BY 4.0
+  project: epi-detection-f2syj-mmfyb
+  url: https://universe.roboflow.com/jose-dhonanatan/epi-detection-f2syj-mmfyb/dataset/1
+  version: 1
+  workspace: jose-dhonanatan
+test: ../test/images
+train: ../train/images
+val: ../valid/images
+path: ~/yolo-edge-api/dataset/exports/epi-v1
