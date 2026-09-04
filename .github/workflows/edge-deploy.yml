@@ -167,7 +167,6 @@ jobs:
       - name: Instalar dependências
         run: pip install ultralytics "dvc[ssh]"
 
-
       - name: Recuperar modelo via DVC
         run: |
           mkdir -p ~/.ssh
@@ -180,12 +179,9 @@ jobs:
       - name: Executar quality gate com dataset customizado
         run: |
           python scripts/validate_model.py \
-            --model models/yolov8n.pt \
+            --model models/yolo-epi.pt \
             --dataset dataset/exports/epi-v1/data.yaml \
             --threshold 0.60
-
-
-
 
   # ─────────────────────────────────────────────────────────
   # JOB 4: Deploy no Raspberry Pi 5 via SSH
