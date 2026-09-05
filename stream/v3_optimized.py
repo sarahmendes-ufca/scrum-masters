@@ -7,20 +7,18 @@ Execução: python3 stream/v3_optimized.py --device 0 --infer-every 3
 """
 
 import argparse
-import json
 import queue
+import subprocess
+import sys
 import threading
 import time
-from pathlib import Path
 from collections import deque
-import sys
-import subprocess
+from pathlib import Path
 
 import cv2
 import numpy as np
-from ultralytics import YOLO
-
 import torch
+from ultralytics import YOLO
 
 _orig_torch_load = torch.load
 
@@ -145,6 +143,9 @@ class RealtimeDetector:
         self.conf = conf
         self.infer_every = infer_every
         self.infer_size = infer_size
+        from preprocessing.preprocessor import PreprocessConfig, Preprocessor
+
+        self.preprocessor = Preprocessor(PreprocessConfig(infer_size=infer_size))
 
         self._frame_idx = 0
         self._last_boxes = []  # [(label, conf, x1,y1,x2,y2), ...]
@@ -171,34 +172,24 @@ class RealtimeDetector:
 
         # ── Inferência (apenas a cada N frames) ──────────────
         if self._frame_idx % self.infer_every == 0:
-            # Redimensiona para acelerar a inferência
-            h, w = frame.shape[:2]
-            small = cv2.resize(frame, (self.infer_size, self.infer_size))
+            preproc_result = self.preprocessor.process(frame)
 
             t0 = time.perf_counter()
-            results = self.model(small, conf=self.conf, verbose=False)
+            results = self.model(preproc_result.frame, conf=self.conf, verbose=False)
             self._last_infer_ms = (time.perf_counter() - t0) * 1000
 
-            # Reescala coordenadas para a resolução original
-            sx = w / self.infer_size
-            sy = h / self.infer_size
             self._last_boxes = []
             for r in results:
                 for box in r.boxes:
-                    x1, y1, x2, y2 = box.xyxy[0].tolist()
+                    bbox_lb = box.xyxy[0].numpy().reshape(1, 4)
+                    x1, y1, x2, y2 = self.preprocessor.adjust_boxes(
+                        bbox_lb, preproc_result
+                    )[0]
                     label = self.model.names[int(box.cls[0])]
                     conf = float(box.conf[0])
                     self._last_boxes.append(
-                        (
-                            label,
-                            conf,
-                            int(x1 * sx),
-                            int(y1 * sy),
-                            int(x2 * sx),
-                            int(y2 * sy),
-                        )
+                        (label, conf, int(x1), int(y1), int(x2), int(y2))
                     )
-
         # ── Desenha bounding boxes ────────────────────────────
         output = frame.copy()
         for label, conf, x1, y1, x2, y2 in self._last_boxes:
@@ -316,14 +307,12 @@ def main():
                 cv2.imshow("YOLO — Tempo Real (pressione q para sair)", annotated)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
-
-    except KeyboardInterrupt:
-        print("\n[INFO] Encerrado pelo usuário.")
     finally:
         camera.stop()
         if writer:
             writer.release()
-        cv2.destroyAllWindows()
+        if not args.no_display:
+            cv2.destroyAllWindows()
         print(f"[INFO] Frames processados: {detector._frame_idx}")
 
 

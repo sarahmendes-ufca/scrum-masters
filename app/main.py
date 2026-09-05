@@ -24,6 +24,8 @@ from schemas import (
     PredictResponse,
 )
 
+from preprocessing.preprocessor import CONFIG_DEFAULT, Preprocessor
+
 
 def log_event(event: str, level: str = "INFO", **kwargs):
     """Emite um evento estruturado em JSON para stdout."""
@@ -50,6 +52,7 @@ _metrics = {
     "total_ms": 0.0,
 }
 _streaming_lock = asyncio.Lock()
+_preprocessor = Preprocessor(CONFIG_DEFAULT)  # instância global
 
 
 def _decode_image(image_base64: str) -> np.ndarray:
@@ -93,9 +96,9 @@ def _capture_frame_from_camera(device_id: int = 0) -> np.ndarray:
                 cmd_tool,
                 "-t",
                 "500",  # 500ms para ajuste de exposição e balanço de branco
-                "-n",   # Sem janela de preview
+                "-n",  # Sem janela de preview
                 "-o",
-                "-",    # Saída direta em memória (stdout)
+                "-",  # Saída direta em memória (stdout)
                 "--width",
                 "640",
                 "--height",
@@ -112,16 +115,12 @@ def _capture_frame_from_camera(device_id: int = 0) -> np.ndarray:
             )
 
             if result.returncode == 0 and len(result.stdout) > 0:
-                img = Image.open(
-                    io.BytesIO(result.stdout)
-                ).convert("RGB")
+                img = Image.open(io.BytesIO(result.stdout)).convert("RGB")
 
                 return np.array(img)
 
         except (OSError, subprocess.SubprocessError) as e:
-            logger.warning(
-                "Falha ao capturar via %s: %s", cmd_tool, e
-            )
+            logger.warning("Falha ao capturar via %s: %s", cmd_tool, e)
 
     # 2. Fallback para câmeras USB padrão (V4L2)
     cap = cv2.VideoCapture(device_id)
@@ -144,34 +143,35 @@ def _capture_frame_from_camera(device_id: int = 0) -> np.ndarray:
     raise HTTPException(
         status_code=500,
         detail=(
-            "Falha ao capturar imagem da câmera. "
-            "Verifique a conexão do cabo flat."
+            "Falha ao capturar imagem da câmera. Verifique a conexão do cabo flat."
         ),
     )
 
 
 def _run_inference(
-    image_np: np.ndarray,
-    model_name: str,
-    confidence: float,
+    image_np: np.ndarray, model_name: str, confidence: float
 ) -> PredictResponse:
     model = load_model(model_name)
 
+    # Pré-processamento explícito
+    # image_np chega em RGB (já convertido em _decode_image) --
+    # o Preprocessor espera BGR, então converte temporariamente
+    frame_bgr = image_np[:, :, ::-1]
+    preproc_res = _preprocessor.process(frame_bgr)
+    frame_ready = preproc_res.frame  # RGB, letterboxed
+
     t0 = time.perf_counter()
-
-    results = model(
-        image_np,
-        conf=confidence,
-        verbose=False,
-    )
-
+    results = model(frame_ready, conf=confidence, verbose=False)
     elapsed_ms = (time.perf_counter() - t0) * 1000
 
     detections = []
-
     for r in results:
         for box in r.boxes:
-            coords = box.xyxy[0].tolist()
+            # Ajusta as coordenadas do espaço letterboxed de volta ao
+            # espaço da imagem original -- sem isso, os bboxes retornados
+            # pela API ficam deslocados sempre que houver padding
+            bbox_lb = box.xyxy[0].numpy().reshape(1, 4)
+            bbox_orig = _preprocessor.adjust_boxes(bbox_lb, preproc_res)[0]
             cls_id = int(box.cls[0].item())
             conf_val = float(box.conf[0].item())
 
@@ -179,15 +179,11 @@ def _run_inference(
                 Detection(
                     label=model.names[cls_id],
                     confidence=round(conf_val, 4),
-                    bbox=[
-                        round(float(c), 2)
-                        for c in coords
-                    ],
+                    bbox=[round(float(c), 2) for c in bbox_orig],
                 )
             )
 
     h, w = image_np.shape[:2]
-
     return PredictResponse(
         detections=detections,
         inference_ms=round(elapsed_ms, 2),
@@ -195,7 +191,6 @@ def _run_inference(
         image_width=w,
         image_height=h,
     )
-
 
 
 @app.post("/predict", response_model=PredictResponse)
@@ -232,9 +227,7 @@ def predict(request: PredictRequest):
                 follow_redirects=True,
             )
             resp.raise_for_status()
-            img = _decode_image(
-                base64.b64encode(resp.content).decode()
-            )
+            img = _decode_image(base64.b64encode(resp.content).decode())
 
         result = _run_inference(
             img,
@@ -250,9 +243,7 @@ def predict(request: PredictRequest):
             model=result.model_used,
             detections=len(result.detections),
             inference_ms=result.inference_ms,
-            image_size=(
-                f"{result.image_width}x{result.image_height}"
-            ),
+            image_size=(f"{result.image_width}x{result.image_height}"),
         )
         return result
 
@@ -275,7 +266,9 @@ def predict(request: PredictRequest):
         )
         raise HTTPException(status_code=500, detail=str(e)) from e
 
+
 # ── Endpoints Originais ─────────────────────────────────────
+
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
@@ -297,13 +290,7 @@ async def health_check():
 
 @app.post(
     "/predict/image",
-    responses={
-        200: {
-            "content": {
-                "image/jpeg": {}
-            }
-        }
-    },
+    responses={200: {"content": {"image/jpeg": {}}}},
 )
 def predict_image(request: PredictRequest):
     """
@@ -326,17 +313,13 @@ def predict_image(request: PredictRequest):
             verbose=False,
         )
 
-        elapsed_ms = (
-            time.perf_counter() - t0
-        ) * 1000
+        elapsed_ms = (time.perf_counter() - t0) * 1000
 
         _metrics["success"] += 1
         _metrics["total_ms"] += elapsed_ms
 
         annotated_array = results[0].plot()
-        annotated_pil = Image.fromarray(
-            annotated_array
-        )
+        annotated_pil = Image.fromarray(annotated_array)
 
         buffer = io.BytesIO()
 
@@ -370,6 +353,7 @@ def predict_image(request: PredictRequest):
 
 # ── Novos Endpoints: Integração com a Câmera ────────────────
 
+
 @app.post(
     "/predict/camera",
     response_model=PredictResponse,
@@ -398,9 +382,7 @@ def predict_from_camera(
     _metrics["total"] += 1
 
     try:
-        img_rgb = _capture_frame_from_camera(
-            device_id=device_id
-        )
+        img_rgb = _capture_frame_from_camera(device_id=device_id)
 
         result = _run_inference(
             img_rgb,
@@ -426,13 +408,7 @@ def predict_from_camera(
 
 @app.get(
     "/predict/camera/image",
-    responses={
-        200: {
-            "content": {
-                "image/jpeg": {}
-            }
-        }
-    },
+    responses={200: {"content": {"image/jpeg": {}}}},
 )
 def predict_from_camera_image(
     device_id: int = Query(
@@ -459,9 +435,7 @@ def predict_from_camera_image(
     _metrics["total"] += 1
 
     try:
-        img_rgb = _capture_frame_from_camera(
-            device_id=device_id
-        )
+        img_rgb = _capture_frame_from_camera(device_id=device_id)
 
         model = load_model(model_name)
 
@@ -473,18 +447,14 @@ def predict_from_camera_image(
             verbose=False,
         )
 
-        elapsed_ms = (
-            time.perf_counter() - t0
-        ) * 1000
+        elapsed_ms = (time.perf_counter() - t0) * 1000
 
         _metrics["success"] += 1
         _metrics["total_ms"] += elapsed_ms
 
         annotated_array = results[0].plot()
 
-        annotated_pil = Image.fromarray(
-            annotated_array
-        )
+        annotated_pil = Image.fromarray(annotated_array)
 
         buffer = io.BytesIO()
 
@@ -512,6 +482,7 @@ def predict_from_camera_image(
 
 # ── Endpoints Batch e Métricas ──────────────────────────────
 
+
 @app.post(
     "/predict/batch",
     response_model=BatchPredictResponse,
@@ -534,9 +505,7 @@ def predict_batch(
             )
         )
 
-    total_ms = (
-        time.perf_counter() - t_total
-    ) * 1000
+    total_ms = (time.perf_counter() - t_total) * 1000
 
     return BatchPredictResponse(
         results=results,
@@ -552,12 +521,7 @@ def predict_batch(
     response_model=MetricsResponse,
 )
 async def get_metrics():
-    avg = (
-        _metrics["total_ms"]
-        / _metrics["success"]
-        if _metrics["success"] > 0
-        else 0.0
-    )
+    avg = _metrics["total_ms"] / _metrics["success"] if _metrics["success"] > 0 else 0.0
 
     return MetricsResponse(
         total_requests=_metrics["total"],
@@ -565,7 +529,9 @@ async def get_metrics():
         avg_inference_ms=round(avg, 2),
     )
 
+
 # ── Streaming de Vídeo (MJPEG) ──────────────────────────────
+
 
 @app.get("/stream/camera")
 async def stream_camera(
@@ -605,14 +571,21 @@ async def stream_camera(
     async def frame_generator():
         cmd = [
             "rpicam-vid",
-            "-t", "0",
+            "-t",
+            "0",
             "-n",
-            "--codec", "mjpeg",
-            "--quality", "80",
-            "--width", "640",
-            "--height", "480",
-            "--framerate", str(framerate),
-            "-o", "-",
+            "--codec",
+            "mjpeg",
+            "--quality",
+            "80",
+            "--width",
+            "640",
+            "--height",
+            "480",
+            "--framerate",
+            str(framerate),
+            "-o",
+            "-",
         ]
 
         loop = asyncio.get_event_loop()
@@ -673,12 +646,10 @@ async def stream_camera(
                         if start_idx == -1 or end_idx == -1:
                             break
 
-                        raw_frame = buffer[start_idx:end_idx + 2]
-                        buffer = buffer[end_idx + 2:]
+                        raw_frame = buffer[start_idx : end_idx + 2]
+                        buffer = buffer[end_idx + 2 :]
 
-                        img = Image.open(
-                            io.BytesIO(raw_frame)
-                        ).convert("RGB")
+                        img = Image.open(io.BytesIO(raw_frame)).convert("RGB")
 
                         img_np = np.array(img)
 
@@ -703,9 +674,7 @@ async def stream_camera(
 
                         yield (
                             b"--frame\r\n"
-                            b"Content-Type: image/jpeg\r\n\r\n"
-                            + jpeg_bytes
-                            + b"\r\n"
+                            b"Content-Type: image/jpeg\r\n\r\n" + jpeg_bytes + b"\r\n"
                         )
 
             finally:
@@ -718,16 +687,11 @@ async def stream_camera(
                     proc.wait(timeout=2)
 
                 if proc.stderr:
-                    stderr_output = (
-                        proc.stderr.read()
-                        .decode(errors="ignore")
-                        .strip()
-                    )
+                    stderr_output = proc.stderr.read().decode(errors="ignore").strip()
 
                     if stderr_output:
                         print(
-                            f"[stream/camera] rpicam-vid stderr:\n"
-                            f"{stderr_output}",
+                            f"[stream/camera] rpicam-vid stderr:\n{stderr_output}",
                             flush=True,
                         )
 
