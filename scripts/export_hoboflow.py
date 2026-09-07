@@ -1,10 +1,13 @@
 # Exporta o dataset via API do Roboflow para a pasta dataset/exports/
 
 import os
+from dotenv import load_dotenv
 from roboflow import Roboflow
 
+load_dotenv()
+
 api_key = os.getenv("ROBOFLOW_API_KEY")
-project_name = "epi-detection-f2syj-mmfyb"
+project_name = os.getenv("PROJECT_NAME")
 version_number = int(os.getenv("ROBOFLOW_VERSION", "1"))
 
 if not api_key:

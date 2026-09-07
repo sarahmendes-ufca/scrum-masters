@@ -137,7 +137,7 @@ def open_capture(args):
     return cap
 
 
-def is_sharp_enough(frame: np.ndarray, threshold: float = 40.0) -> bool:
+def is_sharp_enough(frame: np.ndarray, threshold: float = 10.0) -> bool:
     """
     Descarta frames borrados usando a variância do Laplaciano.
     Um frame nítido tem alta variância nas bordas detectadas.

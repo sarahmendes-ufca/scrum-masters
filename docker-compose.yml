@@ -16,7 +16,7 @@ services:
       - /dev:/dev # Mapeia dispositivos de hardware do host
       - /run/udev:/run/udev:ro # Permite ao libcamera identificar o sensor via udev
     environment:
-      - MODEL_NAME=yolov8n.pt
+      - MODEL_NAME=yolo-epi.pt
       - ROBOFLOW_API_KEY=${ROBOFLOW_API_KEY}
     networks:
       - yolo-net
@@ -59,6 +59,7 @@ services:
     command: >
       python3 stream/mjpeg_server.py
       --device 0
+      --model models/yolo-epi.pt
       --infer-every 3
       --infer-size 320
       --port 5000
