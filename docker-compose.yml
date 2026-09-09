@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  yolo-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: yolo-api-container
+    ports:
+      - "8000:8000"
+    privileged: true
+    devices:
+      - "/dev/video0:/dev/video0"
+      - "/dev/vchiq:/dev/vchiq"
+      - "/dev/dma_heap:/dev/dma_heap"
+    volumes:
+      - .:/app
+      - /run/udev:/run/udev:ro
+      - /dev:/dev
+      - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket:ro
+    environment:
+      - PYTHONPATH=/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    restart: always
+
+  yolo-stream:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: yolo-stream
+    ports:
+      - "5000:5000"
+    privileged: true
+    volumes:
+      - .:/app
+      - /run/udev:/run/udev:ro
+      - /dev:/dev
+    environment:
+      - MODEL_NAME=yolo-epi.pt
+      - PYTHONPATH=/app
+    command: >
+      python3 stream/mjpeg_server.py
+      --device 0
+      --model models/yolo-epi.pt
+      --infer-every 3
+      --infer-size 320
+      --port 5000
+    restart: unless-stopped
+    depends_on:
+      - yolo-api
