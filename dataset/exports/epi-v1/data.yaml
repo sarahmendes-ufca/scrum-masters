@@ -1,0 +1,14 @@
+#path: /home/leticia/yolo-edge-api/dataset/exports/epi-v1
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 3
+names: ['Capacete', 'Colete', 'Pessoa']
+
+roboflow:
+  workspace: leticia-dias-lsiai
+  project: epi-detection-rpi5-6q1f3-copyd
+  version: 3
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/leticia-dias-lsiai/epi-detection-rpi5-6q1f3-copyd/dataset/3
