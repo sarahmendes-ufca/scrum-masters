@@ -49,8 +49,20 @@ tcc-scrum-masters/
 ├───models
 ├───scripts
 ├───stream
-└───tests
+├───tests
     └───assets
+├─── .docker-compose.yaml.swp
+├─── Dockerfile.api
+├─── Dockerfile.client
+├─── README.md
+├─── dataset.dvc
+├─── docker-compose.yaml
+├─── modelo_backup_yolov8n.pt
+├─── ruff.toml
+├─── teste_gpu.py
+├─── train_cepi.py
+├─── yolov8n-cls.pt
+└─── yolov8n.py
 ```
 ## 3. Componentes utilizados 
 
