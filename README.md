@@ -39,40 +39,44 @@ O sistema simula ou processa em tempo real a captura de imagens de linhas de pro
 ## 2️. Arquitetura do Sistema
 
 ```text
-processoseletivoIoT/
-├── .github/
-│   └── workflows/
-│       └── ci.yml             # Pipeline de Integração Contínua (CI)
-├── .devcontainer/             
-│   └── devcontainer.json      # Configuração para ambiente isolado VS Code DevContainer
-├── binaries/                  # Binários e tabelas para gravação de firmware
-│   ├── bootloader.bin
-│   ├── micropython.bin
-│   └── partition-table.bin
-├── src/                   
-│   └── main.py                # Script principal da aplicação / firmware MicroPython
-├── diagram.json               # Esquemático das conexões e simulação (Wokwi)
-├── Dockerfile                 # Imagem containerizada da aplicação
-├── flasher_args.json          # Parâmetros de gravação de memória flash
-├── fs.bin                     # Sistema de arquivos embarcado
-├── requirements.txt           # Dependências Python do projeto
-├── wokwi.toml                 # Configuração de integração com o simulador Wokwi
-└── README.md                  # Documentação principal do projeto
+tcc-scrum-masters/
+├───.dvc
+├───.github
+│   └───workflows
+├───app
+│   └───__pycache__
+├───client
+├───files
+│   └───md5
+│       ├───95
+│       └───a9
+├───models
+├───scripts
+├───stream
+└───tests
+    └───assets
 ```
 ## 3. Componentes utilizados 
 
+- Raspberry pi 5 ou microcomputador similar
+- Fonte de alimentação USB-C 27 W para Raspberry pi 5
+- Módulo câmera Raspberry pi V1.3, 5 MP, interface CSI
+- Cabo adaptador CSI para câmera do Raspberry pi
+---
 ## 4. Pré-requisitos e Recursos
-
+---
 ## 5. Dependâncias e procedimento de instalação
-
+---
 ## 6. Instruções de Montagem e Conexões Elétricas
-
+---
 ## 7. Comandos e Procedimento para Execução
-
+---
 ## 8. Cofirmação do resultado
-
+---
 ## 9. Diagrama de blocos
-
+---
 <img width="1029" height="1518" alt="Meu primeiro board" src="https://github.com/user-attachments/assets/a050302a-7d85-4d7e-8f2d-2a44df469123" />
 
+---
 ## 10. Comentários Adicionais
+---
