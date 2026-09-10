@@ -61,10 +61,8 @@ tcc-scrum-masters/
 - Cabo adaptador CSI para câmera do Raspberry pi
 ---
 ## 4. Pré-requisitos e Recursos
----
-## 5. Dependâncias e procedimento de instalação
 
-### 1. Hardware, Dispositivos e Infraestrutura
+### Hardware, Dispositivos e Infraestrutura
 
 * **Placa Principal:** Raspberry Pi 5 (8 GB de RAM). (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
 
@@ -78,14 +76,17 @@ tcc-scrum-masters/
 * **Armazenamento:** Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
 
 
-### 2. Software de Sistema e Drivers de Captura
+### Software de Sistema e Drivers de Captura
 
 * **Sistema Operacional:** Raspberry Pi OS (Debian).
 
 * **Drivers & Utilitários de Vídeo:** V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
 
+---
+## 5. Dependâncias e procedimento de instalação
 
-### 3. Linguagem e Frameworks Web / Servidores
+
+### Linguagem e Frameworks Web / Servidores
 
 * **Linguagem Base:** Python 3.11.
 
@@ -100,7 +101,7 @@ tcc-scrum-masters/
 
 
 
-### 4. Visão Computacional, IA e Processamento Matemático
+### Visão Computacional, IA e Processamento Matemático
 
 * **Detecção/IA:** Ultralytics YOLOv8 (modelo yolov8n.pt).
 
@@ -112,7 +113,7 @@ tcc-scrum-masters/
 
 
 
-### 5. MLOps, Engenharia de Dados e Observabilidade
+### MLOps, Engenharia de Dados e Observabilidade
 
 * **Gestão de Dataset:** Roboflow (SaaS para anotação/augmentation).
 
@@ -124,7 +125,7 @@ tcc-scrum-masters/
 
 
 
-### 6. Conteinerização, Rede e CI/CD
+### Conteinerização, Rede e CI/CD
 
 * **Contêineres:** Docker e Docker Compose.
 
