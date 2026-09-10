@@ -15,11 +15,10 @@
 3. [Componentes Utilizados na Simulação](#3-componentes-utilizados-na-simulação)
 4. [Pré-requisitos e Recursos](#4-pré-requisitos-e-recursos)
 5. [Dependências e Procedimento de Instalação](#5-dependências-e-procedimento-de-instalação)
-6. [Instruções de Montagem e Conexões Elétricas](#6-instruções-de-montagem-e-conexões-elétricas)
-7. [Comandos e Procedimento para Execução](#7-comandos-e-procedimento-para-execução)
-8. [Confirmação do Resultado](#8-confirmação-do-resultado)
-9. [Diagrama de blocos](#9-diagrama-de-blocos)
-10. [Comentários Adicionais](#10-comentários-adicionais)
+6. [Comandos e Procedimento para Execução](#7-comandos-e-procedimento-para-execução)
+7. [Confirmação do Resultado](#8-confirmação-do-resultado)
+8. [Diagrama de blocos](#9-diagrama-de-blocos)
+9. [Comentários Adicionais](#10-comentários-adicionais)
 
 ---
 
@@ -249,13 +248,11 @@ curl -f http://localhost:8000/health[cite: 1, 2]
 
 ```
 ---
-## 6. Instruções de Montagem e Conexões Elétricas
+## 6. Comandos e Procedimento para Execução
 ---
-## 7. Comandos e Procedimento para Execução
+## 7. Cofirmação do resultado
 ---
-## 8. Cofirmação do resultado
----
-## 9. Diagrama de blocos
+## 8. Diagrama de blocos
 O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. A plataforma utilizada para desenvolvê-lo foi o Miro.
 
 Como informações de entrada haverão apenas as capturas de imagem realizadas pela câmera do Raspberry pi.
@@ -265,5 +262,5 @@ Por fim, como saída temos as informações expressas no dashboard, a notificaç
 <img width="1029" height="1518" alt="Meu primeiro board" src="https://github.com/user-attachments/assets/a050302a-7d85-4d7e-8f2d-2a44df469123" />
 
 ---
-## 10. Comentários Adicionais
+## 9. Comentários Adicionais
 ---
