@@ -63,6 +63,85 @@ tcc-scrum-masters/
 ## 4. Pré-requisitos e Recursos
 ---
 ## 5. Dependâncias e procedimento de instalação
+
+### 1. Hardware, Dispositivos e Infraestrutura
+
+* **Placa Principal:** Raspberry Pi 5 (8 GB de RAM). (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
+
+
+* **Câmera:** Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
+
+
+* **Alimentação:** Fonte oficial USB-C 27 W para Raspberry Pi 5.
+
+
+* **Armazenamento:** Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
+
+
+### 2. Software de Sistema e Drivers de Captura
+
+* **Sistema Operacional:** Raspberry Pi OS (Debian).
+
+* **Drivers & Utilitários de Vídeo:** V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
+
+
+### 3. Linguagem e Frameworks Web / Servidores
+
+* **Linguagem Base:** Python 3.11.
+
+
+* **Servidor e Framework REST:** FastAPI (API REST de inferência) e Uvicorn (servidor ASGI).
+
+
+* **Streaming de Vídeo:** Flask (micro-framework utilitário para stream MJPEG).
+
+
+* **Validação de Dados:** Pydantic.
+
+
+
+### 4. Visão Computacional, IA e Processamento Matemático
+
+* **Detecção/IA:** Ultralytics YOLOv8 (modelo yolov8n.pt).
+
+
+* **Framework DL:** PyTorch e Torchvision.
+
+
+* **Processamento de Imagem:** OpenCV (opencv-python-headless), Pillow (PIL) e NumPy.
+
+
+
+### 5. MLOps, Engenharia de Dados e Observabilidade
+
+* **Gestão de Dataset:** Roboflow (SaaS para anotação/augmentation).
+
+
+* **Versionamento:** DVC (Data Version Control para modelos/dados), Git e GitHub.
+
+
+* **Visualização/Dashboards:** Grafana.
+
+
+
+### 6. Conteinerização, Rede e CI/CD
+
+* **Contêineres:** Docker e Docker Compose.
+
+
+* **Compilação Cruzada:** Docker Buildx e QEMU.
+
+
+* **Registro de Imagens:** GitHub Container Registry (GHCR).
+
+
+* **Rede / VPN Mesh:** Tailscale (acesso SSH e integração CI/CD).
+
+
+* **CI/CD:** GitHub Actions.
+
+
+* **Testes e Qualidade:** Pytest, TestClient (FastAPI), Ruff (linter) e Logs Estruturados em JSON.
 ---
 ## 6. Instruções de Montagem e Conexões Elétricas
 ---
