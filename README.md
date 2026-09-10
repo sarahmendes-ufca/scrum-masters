@@ -37,11 +37,20 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 ```text
 tcc-scrum-masters/
 ├───.dvc
+|  ├───.gitignore
+│  └─── config
 ├───.github
 │   └───workflows
+│       └───edge-deploy.yml
 ├───app
-│   └───__pycache__
+|   ├───__init__.py
+|   ├───main.py
+|   ├───model.py
+|   ├───requirements.txt
+│   └─── schemas.py
 ├───client
+|   ├─── client.py
+│   └─── requirements.txt
 ├───files
 │   └───md5
 │       ├───95
