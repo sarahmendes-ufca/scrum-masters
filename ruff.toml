@@ -1,3 +1,0 @@
-[lint]
-ignore = ["BLE001", "ASYNC220", "UP022", "PLW1510", "S110"]
-
