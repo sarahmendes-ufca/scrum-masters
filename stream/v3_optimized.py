@@ -149,6 +149,7 @@ class RealtimeDetector:
 
         self._frame_idx = 0
         self._last_boxes = []  # [(label, conf, x1,y1,x2,y2), ...]
+        self._last_cls = None
         self._last_infer_ms = 0.0
 
         # FPS calculado sobre janela deslizante de 30 frames
@@ -179,19 +180,42 @@ class RealtimeDetector:
             self._last_infer_ms = (time.perf_counter() - t0) * 1000
 
             self._last_boxes = []
+            self._last_cls = None
             for r in results:
-                for box in r.boxes:
-                    bbox_lb = box.xyxy[0].numpy().reshape(1, 4)
-                    x1, y1, x2, y2 = self.preprocessor.adjust_boxes(
-                        bbox_lb, preproc_result
-                    )[0]
-                    label = self.model.names[int(box.cls[0])]
-                    conf = float(box.conf[0])
-                    self._last_boxes.append(
-                        (label, conf, int(x1), int(y1), int(x2), int(y2))
-                    )
-        # ── Desenha bounding boxes ────────────────────────────
+                if r.probs is not None:
+                    # Modelo de classificação (sem bounding boxes)
+                    top1 = int(r.probs.top1)
+                    label = self.model.names[top1]
+                    conf = float(r.probs.top1conf)
+                    self._last_cls = (label, conf)
+                elif r.boxes is not None:
+                    for box in r.boxes:
+                        bbox_lb = box.xyxy[0].numpy().reshape(1, 4)
+                        x1, y1, x2, y2 = self.preprocessor.adjust_boxes(
+                            bbox_lb, preproc_result
+                        )[0]
+                        label = self.model.names[int(box.cls[0])]
+                        conf = float(box.conf[0])
+                        self._last_boxes.append(
+                            (label, conf, int(x1), int(y1), int(x2), int(y2))
+                        )
+        # ── Desenha bounding boxes (detecção) ou label geral (classificação) ──
         output = frame.copy()
+
+        if self._last_cls is not None:
+            label, conf = self._last_cls
+            cor = (0, 255, 0) if "integro" in label.lower() else (0, 0, 255)
+            caption = f"{label} {conf:.0%}"
+            cv2.putText(
+                output,
+                caption,
+                (10, output.shape[0] - 20),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1.0,
+                cor,
+                2,
+            )
+
         for label, conf, x1, y1, x2, y2 in self._last_boxes:
             cv2.rectangle(output, (x1, y1), (x2, y2), (0, 255, 0), 2)
             caption = f"{label} {conf:.0%}"
@@ -206,7 +230,6 @@ class RealtimeDetector:
                 (0, 0, 0),
                 1,
             )
-
         # ── OSD: métricas sobrepostas ─────────────────────────
         fps_display = (
             (len(self._fps_window) / sum(self._fps_window)) if self._fps_window else 0

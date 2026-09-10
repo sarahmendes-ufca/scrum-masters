@@ -14,9 +14,11 @@ __pycache__/
 .venv/
 
 
-# Imagens de teste grandes
+# Imagens e videos de teste grandes
 images/
 dataset/raw
+videos/
+artefatos/
 
 # Variáveis de ambiente locais
 .env
@@ -26,3 +28,4 @@ runs/
 
 # Tokens de acesso
 .kaggle/*
+/artefatos
