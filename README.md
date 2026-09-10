@@ -65,8 +65,7 @@ tcc-scrum-masters/
 
 ### Hardware, Dispositivos e Infraestrutura
 
-* **Placa Principal:** Raspberry Pi 5 (8 GB de RAM). (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
-
+* **Placa Principal:** Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
 
 * **Câmera:** Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
 
@@ -79,7 +78,7 @@ tcc-scrum-masters/
 
 ### Software de Sistema e Drivers de Captura
 
-* **Sistema Operacional:** Raspberry Pi OS (Debian).
+* **Sistema Operacional:** Raspberry Pi OS 64-bit (Debian Bookworm/Trixie).
 
 * **Drivers & Utilitários de Vídeo:** V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
 
@@ -144,6 +143,111 @@ tcc-scrum-masters/
 
 
 * **Testes e Qualidade:** Pytest, TestClient (FastAPI), Ruff (linter) e Logs Estruturados em JSON.
+
+### Procedimento de Instalação e Configuração
+
+* **Instale Pacotes do Sistema Host:**
+```bash
+sudo apt update && sudo apt upgrade -y[cite: 6]
+sudo apt install -y curl wget git jq tree python3-pip python3-venv libcamera-tools[cite: 1, 2, 3]
+
+```
+
+---
+
+#### 2. Configuração do Docker e Docker Compose
+
+Para isolar a aplicação em containers leves e evitar desgaste do cartão SD faça as seguintes instalações:
+
+1. **Instalação do Docker:**
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh[cite: 2]
+sudo sh get-docker.sh[cite: 2]
+
+```
+
+
+2. **Permissão de Usuário sem `sudo`:**
+```bash
+sudo usermod -aG docker $USER[cite: 2]
+
+```
+
+
+(Efetue logout e login novamente para aplicar a alteração).
+
+
+3. **Validação do Docker:**
+```bash
+docker version[cite: 2]
+docker run --rm hello-world[cite: 2]
+
+```
+
+---
+
+#### Instalação das Dependências Python e MLOps (Ambiente de Desenvolvimento)
+
+Caso precise rodar testes ou validações diretamente no host ou em um ambiente virtual Python (`venv`):
+
+**Crie e Ative um Ambiente Virtual:**
+```bash
+python3 -m venv venv[cite: 6]
+source venv/bin/activate[cite: 6]
+pip install --upgrade pip[cite: 6]
+
+```
+
+
+**Instalação das Bibliotecas de Aprendizado e IA:**
+```bash
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu[cite: 1]
+pip install ultralytics opencv-python-headless pillow numpy[cite: 1, 2]
+
+```
+
+
+**Instalação de Frameworks Web e Utilitários:**
+```bash
+pip install fastapi "uvicorn[standard]" httpx pydantic flask[cite: 1, 2, 3]
+
+```
+
+**Instalação de Ferramentas de MLOps, Testes e Qualidade:**
+```bash
+pip install dvc "dvc[ssh]" pytest ruff prometheus-client roboflow pyyaml[cite: 1, 3, 6]
+
+```
+
+#### Procedimento de Instalação e Execução via Docker Compose (Stack Completa)
+
+**Clone o Repositório do Projeto:**
+```bash
+git clone https://github.com/<seu-usuario>/yolo-edge-api.git[cite: 1]
+cd yolo-edge-api[cite: 1]
+
+```
+
+**Recupere Pesos e Datasets Versionados com DVC:**
+```bash
+dvc pull[cite: 1]
+
+```
+
+
+**Construa as Imagens Multi-Arquitetura (ARM64) e Inicialização dos Serviços:**
+```bash
+docker compose build[cite: 2]
+docker compose up -d[cite: 2]
+
+```
+
+**Por fim, Faça a Verificação do Status dos Serviços:**
+```bash
+docker compose ps[cite: 1, 2]
+curl -f http://localhost:8000/health[cite: 1, 2]
+
+```
 ---
 ## 6. Instruções de Montagem e Conexões Elétricas
 ---
