@@ -280,43 +280,45 @@ curl -f http://localhost:8000/health[cite: 1, 2]
 O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. Conforme ilustra a estrutura abaixo:
 
 +-----------------------------------------------------------------------------------+
-|                                 1. ENTRADA                                        |
-|  +-----------------------------------------------------------------------------+  |
-|  | Câmera Raspberry Pi V1.3 (5 MP - CSI)                                        |  |
-|  | (Captura imagens das garrafas/embalagens na esteira)                        |  |
-|  +-----------------------------------------------------------------------------+  |
+| 1. ENTRADA                                                                        |
+|   +-----------------------------------------------------------------------------+ |
+|   | Câmera Raspberry Pi V1.3 (5 MP - CSI)                                       | |
+|   | (Captura imagens das garrafas/embalagens na esteira)                        | |
+|   +-----------------------------------------------------------------------------+ |
 +------------------------------------------+----------------------------------------+
                                            |
                                            v
 +-----------------------------------------------------------------------------------+
-|                               2. PROCESSAMENTO                                    |
-|  +-----------------------------------------------------------------------------+  |
-|  | Raspberry Pi 5 (8GB) - Nó Computacional de Borda                            |  |
-|  |                                                                             |  |
-|  |   a. Aquisição & Pré-processamento: rpicam-apps / OpenCV                      |  |
-|  |   b. Inferência Edge AI: Modelo YOLOv8 (yolov8n.pt)                         |  |
-|  |      -> Classifica: Íntegra, Danificada, Mal Posicionada, Ausente           |  |
-|  |   c. Serviço FastAPI / Lógica de Negócio:                                   |  |
-|  |      -> Tempo de inferência < 100 ms                                        |  |
-|  |      -> Validação de taxa de erro (> 5%) e geração de logs em JSON          |  |
-|  +-----------------------------------------------------------------------------+  |
+| 2. PROCESSAMENTO                                                                  |
+|   +-----------------------------------------------------------------------------+ |
+|   | Raspberry Pi 5 (8 GB) - Nó Computacional de Borda                           | |
+|   |                                                                             | |
+|   |  a. Aquisição & Pré-processamento: rpicam-apps / OpenCV                     | |
+|   |  b. Inferência Edge AI: Modelo YOLOv8 (yolov8n.pt)                          | |
+|   |     -> Classifica: Íntegra, Danificada, Mal Posicionada, Ausente            | |
+|   |  c. Serviço FastAPI / Lógica de Negócio:                                    | |
+|   |     -> Tempo de inferência < 100 ms                                         | |
+|   |     -> Validação de taxa de erro (> 5%) e geração de logs em JSON           | |
+|   +-----------------------------------------------------------------------------+ |
 +------------------------------------------+----------------------------------------+
                                            |
                                            v
 +-----------------------------------------------------------------------------------+
-|                                 3. SAÍDA                                          |
+| 3. SAÍDA                                                                          |
 |                                                                                   |
-|  [ Atuação Física Local ]                  [ Comunicação Remota & Dados ]         |
-|  +------------------------------+          +-----------------------------------+  |
-|  | Sinal de Alerta / Mecanismo  |          | API REST / Exportador de Métricas |  |
-|  | de Desvio Automático         |          +-----------------+-----------------+  |
-|  | (Braço robótico/Atuador)     |                            | (Rede Tailscale) |
-|  +------------------------------+                            v                    |
-|                                            +-----------------------------------+  |
-|                                            | - Dashboard Grafana (Tempo real)  |  |
-|                                            | - Notificação E-mail (Se erro>5%) |  |
-|                                            +-----------------------------------+  |
+|   [ Atuação Física Local ]              [ Comunicação Remota & Dados ]            |
+|   +------------------------------+      +-----------------------------------+     |
+|   | Sinal de Alerta / Mecanismo  |      | API REST / Exportador de Métricas |     |
+|   | de Desvio Automático         |      | (Rede Tailscale)                  |     |
+|   | (Braço robótico/Atuador)     |      +-----------------+-----------------+     |
+|   +------------------------------+                        |                       |
+|                                                           v                       |
+|                                         +-----------------------------------+     |
+|                                         | - Dashboard Grafana (Tempo real)  |     |
+|                                         | - Notificação E-mail (Se erro > 5%)|     |
+|                                         +-----------------------------------+     |
 +-----------------------------------------------------------------------------------+
+
 
 Mas também replicamos essa estrutura num diagrama de blocos no miro para uma melhor experiência de visualização. O diagrama no miro pode ser acessado a partir da URL: <https://miro.com/app/board/uXjVHpdGiDI=/?share_link_id=459556888478>
 
