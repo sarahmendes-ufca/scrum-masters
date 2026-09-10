@@ -25,14 +25,11 @@
 
 ## 1. Visão Geral da Solução
 
-Este projeto apresenta um sistema de Visão Computacional para inspeção automatizada de controle de qualidade e detecção de falhas em embalagens industriais.
+No ambiente fabril, a etapa de rotulagem na fase final da confecção de produtos frequentemente apresenta gargalos operacionais. Embora seja um processo automatizado, os equipamentos estão sujeitos a falhas. A eventual transferência de produtos defeituosos da esteira de produção para a distribuidora e, consequentemente, para o consumidor final, acarreta insatisfação, prejuízos à credibilidade da marca e perda da confiança na linha de produtos. Adicionalmente, o rótulo constitui a principal fonte de dados para o consumidor, contendo informações essenciais como instruções de uso e prazo de validade; a ausência ou baixa legibilidade desses itens representa um problema crítico de qualidade e conformidade.
 
-O sistema simula ou processa em tempo real a captura de imagens de linhas de produção, identificando anomalias como:
-- Rasgos ou furos nas embalagens.
-- Lacre violado ou ausente.
-- Erros de alinhamento ou rotulagem.
+A inserção de inspeção humana 100% manual após a rotulagem, para checar a presença e o posicionamento das etiquetas, seria uma alternativa direta. No entanto, essa abordagem mostra-se financeiramente inviável e pouco operacional, dada a alta exigência de tempo, mão de obra e custos associados.
 
-À medida que os defeitos são identificados pelo modelo inferido, os dados e alertas são enviados para a infraestrutura do sistema, permitindo a ativação direta em atuadores físicos (ex.: LEDs de alerta, sinalizadores ou pistões de rejeição).
+Diante desse cenário, este trabalho propõe uma solução prática, segura e de menor custo por meio do uso de visão computacional. Trata-se do desenvolvimento de um sistema baseado em inteligência artificial para a verificação e classificação de rótulos em tempo real. A solução permite a emissão de alertas inteligentes e a integração com mecanismos automatizados de triagem — como braços robóticos —, garantindo a imediata remoção dos itens com defeitos identificados.
 
 ---
 
