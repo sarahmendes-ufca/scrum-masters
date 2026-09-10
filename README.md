@@ -59,6 +59,7 @@ tcc-scrum-masters/
 - Fonte de alimentação USB-C 27 W para Raspberry pi 5
 - Módulo câmera Raspberry pi V1.3, 5 MP, interface CSI
 - Cabo adaptador CSI para câmera do Raspberry pi
+- Cartão de Memória MicroSDXC 128 GB, classificação A2/V30
 ---
 ## 4. Pré-requisitos e Recursos
 
@@ -83,7 +84,7 @@ tcc-scrum-masters/
 * **Drivers & Utilitários de Vídeo:** V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
 
 ---
-## 5. Dependâncias e procedimento de instalação
+## 5. Dependências e procedimento de instalação
 
 
 ### Linguagem e Frameworks Web / Servidores
@@ -151,7 +152,12 @@ tcc-scrum-masters/
 ## 8. Cofirmação do resultado
 ---
 ## 9. Diagrama de blocos
----
+O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. A plataforma utilizada para desenvolvê-lo foi o Miro.
+
+Como informações de entrada haverão apenas as capturas de imagem realizadas pela câmera do Raspberry pi.
+Já no processamento são consideradas todas as operações realizadas após a captura até a formulação de dados de saída, sendo a inferência, a classificação e o cálculo das métricas, as principais operações dessa etapa.
+Por fim, como saída temos as informações expressas no dashboard, a notificação de email em caso de alto índice de passagem de itens defeituosos, a documentação do FastAPI e o sinal de alerta para desvio automático de itens a ser processado por outro dispositivo embarcado. 
+
 <img width="1029" height="1518" alt="Meu primeiro board" src="https://github.com/user-attachments/assets/a050302a-7d85-4d7e-8f2d-2a44df469123" />
 
 ---
