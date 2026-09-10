@@ -276,13 +276,53 @@ curl -f http://localhost:8000/health[cite: 1, 2]
 ## 7. Cofirmação do resultado
 ---
 ## 8. Diagrama de blocos
-O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. A plataforma utilizada para desenvolvê-lo foi o Miro.
+
+O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. Conforme ilustra a estrutura abaixo:
+
++-----------------------------------------------------------------------------------+
+|                                 1. ENTRADA                                        |
+|  +-----------------------------------------------------------------------------+  |
+|  | Câmera Raspberry Pi V1.3 (5 MP - CSI)                                        |  |
+|  | (Captura imagens das garrafas/embalagens na esteira)                        |  |
+|  +-----------------------------------------------------------------------------+  |
++------------------------------------------+----------------------------------------+
+                                           |
+                                           v
++-----------------------------------------------------------------------------------+
+|                               2. PROCESSAMENTO                                    |
+|  +-----------------------------------------------------------------------------+  |
+|  | Raspberry Pi 5 (8GB) - Nó Computacional de Borda                            |  |
+|  |                                                                             |  |
+|  |   a. Aquisição & Pré-processamento: rpicam-apps / OpenCV                      |  |
+|  |   b. Inferência Edge AI: Modelo YOLOv8 (yolov8n.pt)                         |  |
+|  |      -> Classifica: Íntegra, Danificada, Mal Posicionada, Ausente           |  |
+|  |   c. Serviço FastAPI / Lógica de Negócio:                                   |  |
+|  |      -> Tempo de inferência < 100 ms                                        |  |
+|  |      -> Validação de taxa de erro (> 5%) e geração de logs em JSON          |  |
+|  +-----------------------------------------------------------------------------+  |
++------------------------------------------+----------------------------------------+
+                                           |
+                                           v
++-----------------------------------------------------------------------------------+
+|                                 3. SAÍDA                                          |
+|                                                                                   |
+|  [ Atuação Física Local ]                  [ Comunicação Remota & Dados ]         |
+|  +------------------------------+          +-----------------------------------+  |
+|  | Sinal de Alerta / Mecanismo  |          | API REST / Exportador de Métricas |  |
+|  | de Desvio Automático         |          +-----------------+-----------------+  |
+|  | (Braço robótico/Atuador)     |                            | (Rede Tailscale) |
+|  +------------------------------+                            v                    |
+|                                            +-----------------------------------+  |
+|                                            | - Dashboard Grafana (Tempo real)  |  |
+|                                            | - Notificação E-mail (Se erro>5%) |  |
+|                                            +-----------------------------------+  |
++-----------------------------------------------------------------------------------+
+
+Mas também replicamos essa estrutura num diagrama de blocos no miro para uma melhor experiência de visualização. O diagrama no miro pode ser acessado a partir da URL: <https://miro.com/app/board/uXjVHpdGiDI=/?share_link_id=459556888478>
 
 Como informações de entrada haverão apenas as capturas de imagem realizadas pela câmera do Raspberry pi.
 Já no processamento são consideradas todas as operações realizadas após a captura até a formulação de dados de saída, sendo a inferência, a classificação e o cálculo das métricas, as principais operações dessa etapa.
 Por fim, como saída temos as informações expressas no dashboard, a notificação de email em caso de alto índice de passagem de itens defeituosos, a documentação do FastAPI e o sinal de alerta para desvio automático de itens a ser processado por outro dispositivo embarcado. 
-
-<img width="1029" height="1518" alt="Meu primeiro board" src="https://github.com/user-attachments/assets/a050302a-7d85-4d7e-8f2d-2a44df469123" />
 
 ---
 ## 9. Comentários Adicionais
