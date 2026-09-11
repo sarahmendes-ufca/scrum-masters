@@ -170,8 +170,8 @@ tcc-scrum-masters/
 
 * **Instale Pacotes do Sistema Host:**
 ```bash
-sudo apt update && sudo apt upgrade -y[cite: 6]
-sudo apt install -y curl wget git jq tree python3-pip python3-venv libcamera-tools[cite: 1, 2, 3]
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl wget git jq tree python3-pip python3-venv libcamera-tools
 
 ```
 
@@ -183,15 +183,15 @@ Para isolar a aplicação em containers leves e evitar desgaste do cartão SD fa
 
 **Instalação do Docker:**
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh[cite: 2]
-sudo sh get-docker.sh[cite: 2]
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
 
 ```
 
 
 **Permissão de Usuário sem `sudo`:**
 ```bash
-sudo usermod -aG docker $USER[cite: 2]
+sudo usermod -aG docker $USER
 
 ```
 
@@ -201,8 +201,8 @@ sudo usermod -aG docker $USER[cite: 2]
 
 **Validação do Docker:**
 ```bash
-docker version[cite: 2]
-docker run --rm hello-world[cite: 2]
+docker version
+docker run --rm hello-world
 
 ```
 
@@ -214,30 +214,30 @@ Caso precise rodar testes ou validações diretamente no host ou em um ambiente 
 
 **Crie e Ative um Ambiente Virtual:**
 ```bash
-python3 -m venv venv[cite: 6]
-source venv/bin/activate[cite: 6]
-pip install --upgrade pip[cite: 6]
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
 
 ```
 
 
 **Instalação das Bibliotecas de Aprendizado e IA:**
 ```bash
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu[cite: 1]
-pip install ultralytics opencv-python-headless pillow numpy[cite: 1, 2]
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+pip install ultralytics opencv-python-headless pillow numpy
 
 ```
 
 
 **Instalação de Frameworks Web e Utilitários:**
 ```bash
-pip install fastapi "uvicorn[standard]" httpx pydantic flask[cite: 1, 2, 3]
+pip install fastapi "uvicorn[standard]" httpx pydantic flask
 
 ```
 
 **Instalação de Ferramentas de MLOps, Testes e Qualidade:**
 ```bash
-pip install dvc "dvc[ssh]" pytest ruff prometheus-client roboflow pyyaml[cite: 1, 3, 6]
+pip install dvc "dvc[ssh]" pytest ruff prometheus-client roboflow pyyaml
 
 ```
 
@@ -245,29 +245,29 @@ pip install dvc "dvc[ssh]" pytest ruff prometheus-client roboflow pyyaml[cite: 1
 
 **Clone o Repositório do Projeto:**
 ```bash
-git clone https://github.com/<seu-usuario>/yolo-edge-api.git[cite: 1]
-cd yolo-edge-api[cite: 1]
+git clone https://github.com/<seu-usuario>/yolo-edge-api.git
+cd yolo-edge-api
 
 ```
 
 **Recupere Pesos e Datasets Versionados com DVC:**
 ```bash
-dvc pull[cite: 1]
+dvc pull
 
 ```
 
 
 **Construa as Imagens Multi-Arquitetura (ARM64) e Inicialização dos Serviços:**
 ```bash
-docker compose build[cite: 2]
-docker compose up -d[cite: 2]
+docker compose build
+docker compose up -d
 
 ```
 
 **Por fim, Faça a Verificação do Status dos Serviços:**
 ```bash
-docker compose ps[cite: 1, 2]
-curl -f http://localhost:8000/health[cite: 1, 2]
+docker compose ps
+curl -f http://localhost:8000/health
 
 ```
 ---
