@@ -1,5 +1,3 @@
-Teste do yolo edge api em um raspberry pi5
-=======
 # 📦 TCC CENÁRIO 3: Visão Computacional para Detecção de Defeitos em Embalagens de Produtos
 
 ### 👤 Identificação da Equipe
