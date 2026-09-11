@@ -276,8 +276,41 @@ curl -f http://localhost:8000/health
 ```
 ---
 ## 6. Comandos e Procedimento para Execução
+
+### Testando a PoC:
+
+Para testar a nossa PoC, com o repositório e todas as dependências instaladas, execute:
+
+Para conectar ao seu dispositivo:
+```bash
+ssh <ip do seu raspberry pi 5>
+
+```
+Para acessar o projeto:
+
+```bash
+cd <caminho da pasta do projeto>
+```
+Para realizar a inferência da imagem de uma garrafa a partir de um vídeo:
+```bash
+python3 stream/video_visualize.py --input <caminho do vídeo no seu dispositivo> --output <nome do vídeo após a inferência> --model models/best.pt --no-display
+```
+
+Depois rode novamente cd com o caminho da pasta do projeto caso esteja em outra pasta e ls para verificar se o arquivo foi criado. Após isso ao assistir o vídeo você verá a inferência e sua classificação sendo exibidas no momento da execução.
+
+Também é possível fazer o teste com imagens, tendo todas as dependências instaladas, basta usar o comando:
+```bash
+yolo predict model=runs/epi-v1-cls3/weights/best.pt (o caminho do modelo l) source=garrafa.jpg (a imagem que você quer escolher)
+```
+Para fazer download do vídeo e da imagem para teste, acesse: https://drive.google.com/drive/folders/1UVhUWeMSqkuLZVQD1KXtWIFyr2M3RvUF?usp=sharing
+
 ---
 ## 7. Cofirmação do resultado
+
+A confirmação do resultado na PoC pode ser visualizada no terminal durante o treinamento e nas imagens ou vídeos pós treinamento com a porcentagem da inferência e a respectiva classificação. 
+
+Os resultados do projeto final serão informados posteriormente após a conclusão do projeto.
+
 ---
 ## 8. Diagrama de blocos
 
