@@ -1,5 +1,3 @@
-Teste do yolo edge api em um raspberry pi5
-=======
 # 📦 TCC CENÁRIO 3: Visão Computacional para Detecção de Defeitos em Embalagens de Produtos
 
 ### 👤 Identificação da Equipe
@@ -37,43 +35,77 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 ## 2️. Arquitetura do Sistema
 
 ```text
-tcc-scrum-masters/
-├───.dvc
-|  ├───.gitignore
-│  └─── config
-├───.github
-│   └───workflows
-│       └───edge-deploy.yml
-├───app
-|   ├───__init__.py
-|   ├───main.py
-|   ├───model.py
-|   ├───requirements.txt
-│   └─── schemas.py
-├───client
-|   ├─── client.py
-│   └─── requirements.txt
-├───files
-│   └───md5
-│       ├───95
-│       └───a9
-├───models
-├───scripts
-├───stream
-├───tests
-    └───assets
-├─── .docker-compose.yaml.swp
-├─── Dockerfile.api
-├─── Dockerfile.client
-├─── README.md
-├─── dataset.dvc
-├─── docker-compose.yaml
-├─── modelo_backup_yolov8n.pt
-├─── ruff.toml
-├─── teste_gpu.py
-├─── train_cepi.py
-├─── yolov8n-cls.pt
-└─── yolov8n.py
+tcc-scrum-masters/                                  # Diretório raiz do projeto (TCC)
+├───.dvc/                                           # Configurações do Data Version Control (DVC)
+|  ├───.gitignore                                   # Ignora arquivos de cache locais do DVC
+│  └─── config                                      # Configuração do repositório remoto de dados
+├───.github/
+│   └───workflows/
+│       └───edge-deploy.yml                         # Pipeline CI/CD (GitHub Actions) para deploy no Edge (ex: Raspberry Pi)
+├───app/                                            # Aplicação backend (FastAPI)
+|  ├───__init__.py                                  # Inicializador do módulo Python
+|  ├───main.py                                      # Ponto de entrada da API, rotas e inicialização
+|  ├───model.py                                     # Lógica de carregamento e inferência do modelo YOLOv8
+|  ├───requirements.txt                             # Dependências específicas da API
+│  └─── schemas.py                                  # Modelos de validação de dados usando Pydantic
+├───client/                                         # Aplicação cliente para interagir com a API
+|  ├─── client.py                                   # Script principal que consome os endpoints de detecção
+│  └─── requirements.txt                            # Dependências específicas do cliente
+├───dataset/                                        # Diretório de dados (gerenciado via DVC)
+|  ├─── raw/                                        # Imagens e anotações brutas originais
+│  └───exports/                                     # Datasets pré-processados/formatados exportados
+├───models/                                         # Pesos do modelo treinado
+│    ├─── best.pt                                   # Melhores pesos do YOLOv8 (deploy principal)
+│    └─── last.pt                                   # Últimos pesos salvos do treinamento
+├───preprocessing/                                  # Pipeline de visão computacional (OpenCV)
+│    ├─── experiments/                              # Scripts para testes de pré-processamento
+│    │  ├───e1_color_space.py                       # Experimentos de conversão de espaço de cores
+│    │  ├───e1_visualize.py                         # Ferramenta para visualização das transformações
+│    │  ├───e2_resize.py                            # Redimensionamento de imagens para otimização
+│    │  ├───e3_filters.py                           # Aplicação de filtros de suavização/ruído
+│    │  ├───e4_contrast.py                          # Ajuste de contraste das imagens
+│    │  ├───e4_generate_dark.py                     # Aumento de dados (data augmentation) para baixa luz
+│    │  └───run_baseline.py                         # Avaliação do modelo base (baseline)
+│    └─── utils/                                    # Funções utilitárias de pré-processamento
+│       ├───__init__.py                             # Inicializador do módulo de utilitários
+│       ├───evaluate.py                             # Cálculo de métricas de qualidade de imagem
+│       └───letterbox.py                            # Algoritmo de letterbox (mantém proporção adicionando bordas)
+├───scripts/                                        # Scripts de automação, MLOps e manipulação de datasets
+|  ├─── ajuste_classe_dir_kaggle.py                 # Corrige estrutura de classes baixadas do Kaggle
+|  ├─── baixa_dataset_kaggle.py                     # Script para download automatizado via API do Kaggle
+|  ├─── deploy.sh                                   # Shell script para facilitar o deploy no ambiente Edge
+|  ├─── encontrar_nome-projeto_roboflow.py          # Busca IDs/nomes na API do Roboflow
+|  ├─── export_hoboflow.py                          # Exporta dataset formatado a partir do Roboflow
+|  ├─── generate_dark_dataset_epi-v1.py             # Script final para geração de dataset escuro (foco em EPI)
+|  ├─── inspect_dataset.py                          # Ferramenta de auditoria/verificação do dataset
+|  ├─── upload_roboflow_dataset_raw.py              # Script para envio automatizado de dados ao Roboflow
+|  ├─── validate_model.py                           # Executa testes de validação pós-treinamento
+│  └───verificar_estrutura_dataset_kaggl            # Checa integridade de pastas vindas do Kaggle
+├───stream/                                         # Módulo de captura e transmissão de vídeo (Edge)
+|  ├───__init__.py                                  # Inicializador do módulo de streaming
+|  ├───capture_frames.py                            # Script base para capturar frames da câmera (OpenCV)
+|  ├───mjpeg_server.py                              # Servidor leve para stream de vídeo em MJPEG
+|  ├───raw_server.py                                # Servidor para envio de frames não comprimidos
+|  ├───v1_naive.py                                  # Captura síncrona padrão (versão não otimizada)
+|  ├───v2_threaded.py                               # Captura assíncrona (usa threads p/ destravar I/O)
+|  ├───v3_optimized.py                              # Captura de alta performance (para Raspberry/ESP32)
+│  └───video_visualize.py                           # Exibe o stream processado na tela local
+├───tests/                                          # Testes unitários e de integração (pytest)
+│   └───assets/                                     # Arquivos estáticos usados nos testes
+│   │   └───zidane.jpg                              # Imagem padrão de teste do ecossistema YOLO
+|   ├───test_api.py                                 # Testes dos endpoints da FastAPI
+│   └───test_preprocessor.py                        # Testes unitários das funções em preprocessing/
+├─── Dockerfile.api                                 # Instruções para conteinerizar a FastAPI
+├─── Dockerfile.client                              # Instruções para conteinerizar a aplicação cliente
+├─── README.md                                      # Documentação oficial do projeto
+├─── dataset.dvc                                    # Arquivo de metadados do DVC apontando para os dados reais
+├─── docker-compose.yaml                            # Orquestração do Docker para subir API e Cliente juntos
+├─── modelo_backup_yolov8n.pt                       # Backup dos pesos iniciais (nano) do YOLOv8
+├─── ruff.toml                                      # Configurações do Ruff (linter/formatador de código Python)
+├─── teste_gpu.py                                   # Script rápido para checar acesso à GPU/CUDA ou NPU
+├─── train_cepi.py                                  # Script principal de treinamento customizado (EPIs)
+├─── yolov8n-cls.pt                                 # Pesos pré-treinados para Classificação (YOLOv8 Nano)
+└─── yolov8n.py                                     # Script rápido de teste ou download do YOLOv8
 ```
 ## 3. Componentes utilizados 
 
@@ -170,28 +202,28 @@ tcc-scrum-masters/
 
 * **Instale Pacotes do Sistema Host:**
 ```bash
-sudo apt update && sudo apt upgrade -y[cite: 6]
-sudo apt install -y curl wget git jq tree python3-pip python3-venv libcamera-tools[cite: 1, 2, 3]
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl wget git jq tree python3-pip python3-venv libcamera-tools
 
 ```
 
 ---
 
-#### 2. Configuração do Docker e Docker Compose
+#### Configuração do Docker e Docker Compose
 
 Para isolar a aplicação em containers leves e evitar desgaste do cartão SD faça as seguintes instalações:
 
-1. **Instalação do Docker:**
+**Instalação do Docker:**
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh[cite: 2]
-sudo sh get-docker.sh[cite: 2]
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
 
 ```
 
 
-2. **Permissão de Usuário sem `sudo`:**
+**Permissão de Usuário sem `sudo`:**
 ```bash
-sudo usermod -aG docker $USER[cite: 2]
+sudo usermod -aG docker $USER
 
 ```
 
@@ -199,10 +231,10 @@ sudo usermod -aG docker $USER[cite: 2]
 (Efetue logout e login novamente para aplicar a alteração).
 
 
-3. **Validação do Docker:**
+**Validação do Docker:**
 ```bash
-docker version[cite: 2]
-docker run --rm hello-world[cite: 2]
+docker version
+docker run --rm hello-world
 
 ```
 
@@ -214,60 +246,32 @@ Caso precise rodar testes ou validações diretamente no host ou em um ambiente 
 
 **Crie e Ative um Ambiente Virtual:**
 ```bash
-python3 -m venv venv[cite: 6]
-source venv/bin/activate[cite: 6]
-pip install --upgrade pip[cite: 6]
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
 
 ```
 
 
 **Instalação das Bibliotecas de Aprendizado e IA:**
+
+Para instalar as bibliotecas utilizadas basta rodar o comando
+
 ```bash
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu[cite: 1]
-pip install ultralytics opencv-python-headless pillow numpy[cite: 1, 2]
+pip install -r app/requirements.txt
 
 ```
-
-
-**Instalação de Frameworks Web e Utilitários:**
-```bash
-pip install fastapi "uvicorn[standard]" httpx pydantic flask[cite: 1, 2, 3]
-
-```
-
-**Instalação de Ferramentas de MLOps, Testes e Qualidade:**
-```bash
-pip install dvc "dvc[ssh]" pytest ruff prometheus-client roboflow pyyaml[cite: 1, 3, 6]
-
-```
-
-#### Procedimento de Instalação e Execução via Docker Compose (Stack Completa)
-
-**Clone o Repositório do Projeto:**
-```bash
-git clone https://github.com/<seu-usuario>/yolo-edge-api.git[cite: 1]
-cd yolo-edge-api[cite: 1]
-
-```
-
-**Recupere Pesos e Datasets Versionados com DVC:**
-```bash
-dvc pull[cite: 1]
-
-```
-
-
 **Construa as Imagens Multi-Arquitetura (ARM64) e Inicialização dos Serviços:**
 ```bash
-docker compose build[cite: 2]
-docker compose up -d[cite: 2]
+docker compose build
+docker compose up -d
 
 ```
 
 **Por fim, Faça a Verificação do Status dos Serviços:**
 ```bash
-docker compose ps[cite: 1, 2]
-curl -f http://localhost:8000/health[cite: 1, 2]
+docker compose ps
+curl -f http://localhost:8000/health
 
 ```
 ---
@@ -276,6 +280,7 @@ curl -f http://localhost:8000/health[cite: 1, 2]
 ## 7. Cofirmação do resultado
 ---
 ## 8. Diagrama de blocos
+
 O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. A plataforma utilizada para desenvolvê-lo foi o Miro.
 
 Como informações de entrada haverão apenas as capturas de imagem realizadas pela câmera do Raspberry pi.
