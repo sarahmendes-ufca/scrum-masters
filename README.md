@@ -95,7 +95,6 @@ tcc-scrum-masters/                                  # Diretório raiz do projeto
 │   │   └───zidane.jpg                              # Imagem padrão de teste do ecossistema YOLO
 |   ├───test_api.py                                 # Testes dos endpoints da FastAPI
 │   └───test_preprocessor.py                        # Testes unitários das funções em preprocessing/
-├─── .docker-compose.yaml.swp                       # Arquivo de swap temporário (seguro para excluir)
 ├─── Dockerfile.api                                 # Instruções para conteinerizar a FastAPI
 ├─── Dockerfile.client                              # Instruções para conteinerizar a aplicação cliente
 ├─── README.md                                      # Documentação oficial do projeto
