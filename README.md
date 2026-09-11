@@ -210,7 +210,7 @@ sudo apt install -y curl wget git jq tree python3-pip python3-venv libcamera-too
 
 ---
 
-#### 2. Configuração do Docker e Docker Compose
+#### Configuração do Docker e Docker Compose
 
 Para isolar a aplicação em containers leves e evitar desgaste do cartão SD faça as seguintes instalações:
 
@@ -259,7 +259,7 @@ pip install --upgrade pip
 Para instalar as bibliotecas utilizadas basta rodar o comando
 
 ```bash
-pip install -r requirements.txt
+pip install -r app/requirements.txt
 
 ```
 **Construa as Imagens Multi-Arquitetura (ARM64) e Inicialização dos Serviços:**
