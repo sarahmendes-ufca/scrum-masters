@@ -181,7 +181,7 @@ sudo apt install -y curl wget git jq tree python3-pip python3-venv libcamera-too
 
 Para isolar a aplicação em containers leves e evitar desgaste do cartão SD faça as seguintes instalações:
 
-1. **Instalação do Docker:**
+**Instalação do Docker:**
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh[cite: 2]
 sudo sh get-docker.sh[cite: 2]
@@ -189,7 +189,7 @@ sudo sh get-docker.sh[cite: 2]
 ```
 
 
-2. **Permissão de Usuário sem `sudo`:**
+**Permissão de Usuário sem `sudo`:**
 ```bash
 sudo usermod -aG docker $USER[cite: 2]
 
@@ -199,7 +199,7 @@ sudo usermod -aG docker $USER[cite: 2]
 (Efetue logout e login novamente para aplicar a alteração).
 
 
-3. **Validação do Docker:**
+**Validação do Docker:**
 ```bash
 docker version[cite: 2]
 docker run --rm hello-world[cite: 2]
