@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-stream/run_on_video.py — Roda o modelo de classificação usando um arquivo de vídeo.
-Execução: python3 stream/run_on_video.py --input artefatos/videos/meu_video.mp4 --output resultado.mp4
+stream/video_visualize.py — Roda o modelo de detecção (object detection) sobre um arquivo de vídeo.
+Execução: python3 stream/video_visualize.py --input artefatos/videos/meu_video.mp4 --output resultado.mp4
 """
 
 import argparse
@@ -47,6 +47,28 @@ def parse_args():
     return p.parse_args()
 
 
+def draw_boxes(frame, boxes):
+    """Desenha bounding boxes + labels no frame. boxes: [(label, conf, x1,y1,x2,y2), ...]"""
+    output = frame.copy()
+    for label, conf, x1, y1, x2, y2 in boxes:
+        cor = (0, 255, 0) if "integro" in label.lower() else (0, 0, 255)
+        cv2.rectangle(output, (x1, y1), (x2, y2), cor, 2)
+
+        caption = f"{label} {conf:.0%}"
+        (tw, th), _ = cv2.getTextSize(caption, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
+        cv2.rectangle(output, (x1, y1 - th - 10), (x1 + tw + 4, y1), cor, -1)
+        cv2.putText(
+            output,
+            caption,
+            (x1 + 2, y1 - 4),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (255, 255, 255),
+            2,
+        )
+    return output
+
+
 def main():
     args = parse_args()
 
@@ -68,7 +90,7 @@ def main():
     writer = cv2.VideoWriter(args.output, fourcc, fps, (width, height))
 
     frame_idx = 0
-    last_cls = None
+    last_boxes = []  # [(label, conf, x1,y1,x2,y2), ...]
 
     while True:
         ret, frame = cap.read()
@@ -78,29 +100,22 @@ def main():
 
         if frame_idx % args.infer_every == 0:
             results = model(frame, conf=args.conf, verbose=False)
+            last_boxes = []
             for r in results:
-                if r.probs is not None:
-                    top1 = int(r.probs.top1)
-                    label = model.names[top1]
-                    conf = float(r.probs.top1conf)
-                    last_cls = (label, conf)
-                    print(f"[Frame {frame_idx}/{total_frames}] {label} ({conf:.0%})")
-
-        output = frame.copy()
-        if last_cls is not None:
-            label, conf = last_cls
-            cor = (0, 255, 0) if "integro" in label.lower() else (0, 0, 255)  # RGB
-            caption = f"{label} {conf:.0%}"
-            cv2.putText(
-                output,
-                caption,
-                (10, height - 20),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1.0,
-                cor,
-                2,
+                if r.boxes is None:
+                    continue
+                for box in r.boxes:
+                    x1, y1, x2, y2 = box.xyxy[0].tolist()
+                    label = model.names[int(box.cls[0])]
+                    conf = float(box.conf[0])
+                    last_boxes.append((label, conf, int(x1), int(y1), int(x2), int(y2)))
+            print(
+                f"[Frame {frame_idx}/{total_frames}] "
+                f"{len(last_boxes)} detecção(ões): "
+                f"{[f'{l} {c:.0%}' for l, c, *_ in last_boxes]}"
             )
 
+        output = draw_boxes(frame, last_boxes)
         writer.write(output)
 
         if not args.no_display:
