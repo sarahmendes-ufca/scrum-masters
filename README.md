@@ -276,6 +276,30 @@ curl -f http://localhost:8000/health
 ```
 ---
 ## 6. Comandos e Procedimento para Execução
+
+### Testando a PoC:
+
+Para testar a nossa PoC, com o repositório e todas as dependências instaladas, execute:
+
+Para conectar ao seu dispositivo:
+```bash
+ssh <ip do seu raspberry pi 5>
+
+```
+Para acessar o projeto:
+
+```bash
+cd <caminho da pasta do projeto>
+```
+Para realizar a inferência da imagem de uma garrafa a partir de um vídeo:
+```bash
+python3 stream/video_visualize.py --input <caminho do vídeo no seu dispositivo> --output <nome do vídeo após a inferência> --model models/best.pt --no-display
+```
+
+Depois rode novamente cd com o caminho da pasta do projeto caso esteja em outra pasta e ls para verificar se o arquivo foi criado. Após isso ao assistir o vídeo você verá a inferência e sua classificação sendo exibidas no momento da execução.
+
+Para fazer download do vídeo para teste, acesse: https://drive.google.com/drive/folders/1UVhUWeMSqkuLZVQD1KXtWIFyr2M3RvUF?usp=sharing
+
 ---
 ## 7. Cofirmação do resultado
 ---
