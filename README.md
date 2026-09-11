@@ -2,6 +2,7 @@
 
 ### 👤 Identificação da Equipe
 - **scrum-masters**
+- **repositório: https://github.com/sarahmendes-ufca/scrum-masters**
 - **GitHub dos Membros:** 
   - José Dhonatan Fernandes de Almeida — [`@sudo-invers`](https://github.com/sudo-invers)
   - Letícia Maria dos Santos Dias — [`@leticia-software-engineer`](https://github.com/leticia-software-engineer)
