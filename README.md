@@ -18,7 +18,6 @@
 6. [Comandos e Procedimento para Execução](#7-comandos-e-procedimento-para-execução)
 7. [Confirmação do Resultado](#8-confirmação-do-resultado)
 8. [Diagrama de blocos](#9-diagrama-de-blocos)
-9. [Comentários Adicionais](#10-comentários-adicionais)
 
 ---
 
@@ -322,6 +321,4 @@ Por fim, como saída temos as informações expressas no dashboard, a notificaç
 
 <img width="1029" height="1518" alt="Meu primeiro board" src="https://github.com/user-attachments/assets/a050302a-7d85-4d7e-8f2d-2a44df469123" />
 
----
-## 9. Comentários Adicionais
 ---
