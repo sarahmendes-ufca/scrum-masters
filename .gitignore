@@ -30,3 +30,4 @@ runs/
 # Tokens de acesso
 .kaggle/*
 /artefatos
+/runs

@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['rotulo ausente', 'rotulo integro']
+
+roboflow:
+  workspace: jose-dhonatan-fernandes-de-almeida
+  project: tcc-pnaat
+  version: 1
+  license: Private
+  url: https://app.roboflow.com/jose-dhonatan-fernandes-de-almeida/tcc-pnaat/1
