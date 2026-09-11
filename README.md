@@ -255,41 +255,13 @@ pip install --upgrade pip
 
 
 **Instalação das Bibliotecas de Aprendizado e IA:**
+
+Para instalar as bibliotecas utilizadas basta rodar o comando
+
 ```bash
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-pip install ultralytics opencv-python-headless pillow numpy
+pip install -r requirements.txt
 
 ```
-
-
-**Instalação de Frameworks Web e Utilitários:**
-```bash
-pip install fastapi "uvicorn[standard]" httpx pydantic flask
-
-```
-
-**Instalação de Ferramentas de MLOps, Testes e Qualidade:**
-```bash
-pip install dvc "dvc[ssh]" pytest ruff prometheus-client roboflow pyyaml
-
-```
-
-#### Procedimento de Instalação e Execução via Docker Compose (Stack Completa)
-
-**Clone o Repositório do Projeto:**
-```bash
-git clone https://github.com/<seu-usuario>/yolo-edge-api.git
-cd yolo-edge-api
-
-```
-
-**Recupere Pesos e Datasets Versionados com DVC:**
-```bash
-dvc pull
-
-```
-
-
 **Construa as Imagens Multi-Arquitetura (ARM64) e Inicialização dos Serviços:**
 ```bash
 docker compose build
