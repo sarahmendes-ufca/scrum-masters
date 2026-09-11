@@ -37,43 +37,78 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 ## 2️. Arquitetura do Sistema
 
 ```text
-tcc-scrum-masters/
-├───.dvc
-|  ├───.gitignore
-│  └─── config
-├───.github
-│   └───workflows
-│       └───edge-deploy.yml
-├───app
-|   ├───__init__.py
-|   ├───main.py
-|   ├───model.py
-|   ├───requirements.txt
-│   └─── schemas.py
-├───client
-|   ├─── client.py
-│   └─── requirements.txt
-├───files
-│   └───md5
-│       ├───95
-│       └───a9
-├───models
-├───scripts
-├───stream
-├───tests
-    └───assets
-├─── .docker-compose.yaml.swp
-├─── Dockerfile.api
-├─── Dockerfile.client
-├─── README.md
-├─── dataset.dvc
-├─── docker-compose.yaml
-├─── modelo_backup_yolov8n.pt
-├─── ruff.toml
-├─── teste_gpu.py
-├─── train_cepi.py
-├─── yolov8n-cls.pt
-└─── yolov8n.py
+tcc-scrum-masters/                                  # Diretório raiz do projeto (TCC)
+├───.dvc/                                           # Configurações do Data Version Control (DVC)
+|  ├───.gitignore                                   # Ignora arquivos de cache locais do DVC
+│  └─── config                                      # Configuração do repositório remoto de dados
+├───.github/
+│   └───workflows/
+│       └───edge-deploy.yml                         # Pipeline CI/CD (GitHub Actions) para deploy no Edge (ex: Raspberry Pi)
+├───app/                                            # Aplicação backend (FastAPI)
+|  ├───__init__.py                                  # Inicializador do módulo Python
+|  ├───main.py                                      # Ponto de entrada da API, rotas e inicialização
+|  ├───model.py                                     # Lógica de carregamento e inferência do modelo YOLOv8
+|  ├───requirements.txt                             # Dependências específicas da API
+│  └─── schemas.py                                  # Modelos de validação de dados usando Pydantic
+├───client/                                         # Aplicação cliente para interagir com a API
+|  ├─── client.py                                   # Script principal que consome os endpoints de detecção
+│  └─── requirements.txt                            # Dependências específicas do cliente
+├───dataset/                                        # Diretório de dados (gerenciado via DVC)
+|  ├─── raw/                                        # Imagens e anotações brutas originais
+│  └───exports/                                     # Datasets pré-processados/formatados exportados
+├───models/                                         # Pesos do modelo treinado
+│    ├─── best.pt                                   # Melhores pesos do YOLOv8 (deploy principal)
+│    └─── last.pt                                   # Últimos pesos salvos do treinamento
+├───preprocessing/                                  # Pipeline de visão computacional (OpenCV)
+│    ├─── experiments/                              # Scripts para testes de pré-processamento
+│    │  ├───e1_color_space.py                       # Experimentos de conversão de espaço de cores
+│    │  ├───e1_visualize.py                         # Ferramenta para visualização das transformações
+│    │  ├───e2_resize.py                            # Redimensionamento de imagens para otimização
+│    │  ├───e3_filters.py                           # Aplicação de filtros de suavização/ruído
+│    │  ├───e4_contrast.py                          # Ajuste de contraste das imagens
+│    │  ├───e4_generate_dark.py                     # Aumento de dados (data augmentation) para baixa luz
+│    │  └───run_baseline.py                         # Avaliação do modelo base (baseline)
+│    └─── utils/                                    # Funções utilitárias de pré-processamento
+│       ├───__init__.py                             # Inicializador do módulo de utilitários
+│       ├───evaluate.py                             # Cálculo de métricas de qualidade de imagem
+│       └───letterbox.py                            # Algoritmo de letterbox (mantém proporção adicionando bordas)
+├───scripts/                                        # Scripts de automação, MLOps e manipulação de datasets
+|  ├─── ajuste_classe_dir_kaggle.py                 # Corrige estrutura de classes baixadas do Kaggle
+|  ├─── baixa_dataset_kaggle.py                     # Script para download automatizado via API do Kaggle
+|  ├─── deploy.sh                                   # Shell script para facilitar o deploy no ambiente Edge
+|  ├─── encontrar_nome-projeto_roboflow.py          # Busca IDs/nomes na API do Roboflow
+|  ├─── export_hoboflow.py                          # Exporta dataset formatado a partir do Roboflow
+|  ├─── generate_dark_dataset_epi-v1.py             # Script final para geração de dataset escuro (foco em EPI)
+|  ├─── inspect_dataset.py                          # Ferramenta de auditoria/verificação do dataset
+|  ├─── upload_roboflow_dataset_raw.py              # Script para envio automatizado de dados ao Roboflow
+|  ├─── validate_model.py                           # Executa testes de validação pós-treinamento
+│  └───verificar_estrutura_dataset_kaggl            # Checa integridade de pastas vindas do Kaggle
+├───stream/                                         # Módulo de captura e transmissão de vídeo (Edge)
+|  ├───__init__.py                                  # Inicializador do módulo de streaming
+|  ├───capture_frames.py                            # Script base para capturar frames da câmera (OpenCV)
+|  ├───mjpeg_server.py                              # Servidor leve para stream de vídeo em MJPEG
+|  ├───raw_server.py                                # Servidor para envio de frames não comprimidos
+|  ├───v1_naive.py                                  # Captura síncrona padrão (versão não otimizada)
+|  ├───v2_threaded.py                               # Captura assíncrona (usa threads p/ destravar I/O)
+|  ├───v3_optimized.py                              # Captura de alta performance (para Raspberry/ESP32)
+│  └───video_visualize.py                           # Exibe o stream processado na tela local
+├───tests/                                          # Testes unitários e de integração (pytest)
+│   └───assets/                                     # Arquivos estáticos usados nos testes
+│   │   └───zidane.jpg                              # Imagem padrão de teste do ecossistema YOLO
+|   ├───test_api.py                                 # Testes dos endpoints da FastAPI
+│   └───test_preprocessor.py                        # Testes unitários das funções em preprocessing/
+├─── .docker-compose.yaml.swp                       # Arquivo de swap temporário (seguro para excluir)
+├─── Dockerfile.api                                 # Instruções para conteinerizar a FastAPI
+├─── Dockerfile.client                              # Instruções para conteinerizar a aplicação cliente
+├─── README.md                                      # Documentação oficial do projeto
+├─── dataset.dvc                                    # Arquivo de metadados do DVC apontando para os dados reais
+├─── docker-compose.yaml                            # Orquestração do Docker para subir API e Cliente juntos
+├─── modelo_backup_yolov8n.pt                       # Backup dos pesos iniciais (nano) do YOLOv8
+├─── ruff.toml                                      # Configurações do Ruff (linter/formatador de código Python)
+├─── teste_gpu.py                                   # Script rápido para checar acesso à GPU/CUDA ou NPU
+├─── train_cepi.py                                  # Script principal de treinamento customizado (EPIs)
+├─── yolov8n-cls.pt                                 # Pesos pré-treinados para Classificação (YOLOv8 Nano)
+└─── yolov8n.py                                     # Script rápido de teste ou download do YOLOv8
 ```
 ## 3. Componentes utilizados 
 
