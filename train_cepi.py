@@ -26,7 +26,7 @@ if __name__ == "__main__":
     results = model.train(
         data="dataset",
         epochs=100,
-        imgsz=224,  # Como classificacao nao precisa de tanto detalhe, posso dimnuir a resolucao
+        imgsz=416,  # Como classificacao nao precisa de tanto detalhe, posso dimnuir a resolucao
         device=0,
         patience=20,
         project="runs",
@@ -36,3 +36,4 @@ if __name__ == "__main__":
 
     print("top1_acc:", results.results_dict.get("metrics/accuracy_top1"))
     print("top5_acc:", results.results_dict.get("metrics/accuracy_top5"))
+
