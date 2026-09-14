@@ -235,15 +235,11 @@ depois, no terminal, extraia o arquivo instalado:
 ```bash
 tar -xvzf <arquivo a ser extraido>
 ```
-TODO: Estudando conteinerização com container prometheus
 
 
 
 ## 8. Cofirmação do resultado
 
-A confirmação do resultado na PoC pode ser visualizada no terminal durante o treinamento e nas imagens ou vídeos pós treinamento com a porcentagem da inferência e a respectiva classificação. 
-
-Os resultados do projeto final serão informados posteriormente após a conclusão do projeto.
 
 ---
 ## 9. Diagrama de blocos
