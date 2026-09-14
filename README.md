@@ -22,6 +22,13 @@
 
 ---
 
+> [!WARNING]
+> Sempre que em algum comando estiver escrito os simbolo "<" ou ">", não inclua eles no comando.
+> Exemplo: http://<ip do raspberry pi>:8000
+> Deve ser escrito quando usado assim (usado um ip aleatorio como exemplo): http://100.95.153.33:8000
+> Substituido <ip do raspeberry pi> por 100.95.153.33
+---
+
 ## 1. Visão Geral da Solução
 
 No ambiente fabril, a etapa de rotulagem na fase final da confecção de produtos frequentemente apresenta gargalos operacionais. Embora seja um processo automatizado, os equipamentos estão sujeitos a falhas. A eventual transferência de produtos defeituosos da esteira de produção para a distribuidora e, consequentemente, para o consumidor final, acarreta insatisfação, prejuízos à credibilidade da marca e perda da confiança na linha de produtos. Adicionalmente, o rótulo constitui a principal fonte de dados para o consumidor, contendo informações essenciais como instruções de uso e prazo de validade; a ausência ou baixa legibilidade desses itens representa um problema crítico de qualidade e conformidade.
@@ -34,80 +41,9 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ## 2️. Arquitetura do Sistema
 
-```text
-tcc-scrum-masters/                                  # Diretório raiz do projeto (TCC)
-├───.dvc/                                           # Configurações do Data Version Control (DVC)
-|  ├───.gitignore                                   # Ignora arquivos de cache locais do DVC
-│  └─── config                                      # Configuração do repositório remoto de dados
-├───.github/
-│   └───workflows/
-│       └───edge-deploy.yml                         # Pipeline CI/CD (GitHub Actions) para deploy no Edge (ex: Raspberry Pi)
-├───app/                                            # Aplicação backend (FastAPI)
-|  ├───__init__.py                                  # Inicializador do módulo Python
-|  ├───main.py                                      # Ponto de entrada da API, rotas e inicialização
-|  ├───model.py                                     # Lógica de carregamento e inferência do modelo YOLOv8
-|  ├───requirements.txt                             # Dependências específicas da API
-│  └─── schemas.py                                  # Modelos de validação de dados usando Pydantic
-├───client/                                         # Aplicação cliente para interagir com a API
-|  ├─── client.py                                   # Script principal que consome os endpoints de detecção
-│  └─── requirements.txt                            # Dependências específicas do cliente
-├───dataset/                                        # Diretório de dados (gerenciado via DVC)
-|  ├─── raw/                                        # Imagens e anotações brutas originais
-│  └───exports/                                     # Datasets pré-processados/formatados exportados
-├───models/                                         # Pesos do modelo treinado
-│    ├─── best.pt                                   # Melhores pesos do YOLOv8 (deploy principal)
-│    └─── last.pt                                   # Últimos pesos salvos do treinamento
-├───preprocessing/                                  # Pipeline de visão computacional (OpenCV)
-│    ├─── experiments/                              # Scripts para testes de pré-processamento
-│    │  ├───e1_color_space.py                       # Experimentos de conversão de espaço de cores
-│    │  ├───e1_visualize.py                         # Ferramenta para visualização das transformações
-│    │  ├───e2_resize.py                            # Redimensionamento de imagens para otimização
-│    │  ├───e3_filters.py                           # Aplicação de filtros de suavização/ruído
-│    │  ├───e4_contrast.py                          # Ajuste de contraste das imagens
-│    │  ├───e4_generate_dark.py                     # Aumento de dados (data augmentation) para baixa luz
-│    │  └───run_baseline.py                         # Avaliação do modelo base (baseline)
-│    └─── utils/                                    # Funções utilitárias de pré-processamento
-│       ├───__init__.py                             # Inicializador do módulo de utilitários
-│       ├───evaluate.py                             # Cálculo de métricas de qualidade de imagem
-│       └───letterbox.py                            # Algoritmo de letterbox (mantém proporção adicionando bordas)
-├───scripts/                                        # Scripts de automação, MLOps e manipulação de datasets
-|  ├─── ajuste_classe_dir_kaggle.py                 # Corrige estrutura de classes baixadas do Kaggle
-|  ├─── baixa_dataset_kaggle.py                     # Script para download automatizado via API do Kaggle
-|  ├─── deploy.sh                                   # Shell script para facilitar o deploy no ambiente Edge
-|  ├─── encontrar_nome-projeto_roboflow.py          # Busca IDs/nomes na API do Roboflow
-|  ├─── export_hoboflow.py                          # Exporta dataset formatado a partir do Roboflow
-|  ├─── generate_dark_dataset_epi-v1.py             # Script final para geração de dataset escuro (foco em EPI)
-|  ├─── inspect_dataset.py                          # Ferramenta de auditoria/verificação do dataset
-|  ├─── upload_roboflow_dataset_raw.py              # Script para envio automatizado de dados ao Roboflow
-|  ├─── validate_model.py                           # Executa testes de validação pós-treinamento
-│  └───verificar_estrutura_dataset_kaggl            # Checa integridade de pastas vindas do Kaggle
-├───stream/                                         # Módulo de captura e transmissão de vídeo (Edge)
-|  ├───__init__.py                                  # Inicializador do módulo de streaming
-|  ├───capture_frames.py                            # Script base para capturar frames da câmera (OpenCV)
-|  ├───mjpeg_server.py                              # Servidor leve para stream de vídeo em MJPEG
-|  ├───raw_server.py                                # Servidor para envio de frames não comprimidos
-|  ├───v1_naive.py                                  # Captura síncrona padrão (versão não otimizada)
-|  ├───v2_threaded.py                               # Captura assíncrona (usa threads p/ destravar I/O)
-|  ├───v3_optimized.py                              # Captura de alta performance (para Raspberry/ESP32)
-│  └───video_visualize.py                           # Exibe o stream processado na tela local
-├───tests/                                          # Testes unitários e de integração (pytest)
-│   └───assets/                                     # Arquivos estáticos usados nos testes
-│   │   └───zidane.jpg                              # Imagem padrão de teste do ecossistema YOLO
-|   ├───test_api.py                                 # Testes dos endpoints da FastAPI
-│   └───test_preprocessor.py                        # Testes unitários das funções em preprocessing/
-├─── Dockerfile.api                                 # Instruções para conteinerizar a FastAPI
-├─── Dockerfile.client                              # Instruções para conteinerizar a aplicação cliente
-├─── README.md                                      # Documentação oficial do projeto
-├─── dataset.dvc                                    # Arquivo de metadados do DVC apontando para os dados reais
-├─── docker-compose.yaml                            # Orquestração do Docker para subir API e Cliente juntos
-├─── modelo_backup_yolov8n.pt                       # Backup dos pesos iniciais (nano) do YOLOv8
-├─── ruff.toml                                      # Configurações do Ruff (linter/formatador de código Python)
-├─── teste_gpu.py                                   # Script rápido para checar acesso à GPU/CUDA ou NPU
-├─── train_cepi.py                                  # Script principal de treinamento customizado (EPIs)
-├─── yolov8n-cls.pt                                 # Pesos pré-treinados para Classificação (YOLOv8 Nano)
-└─── yolov8n.py                                     # Script rápido de teste ou download do YOLOv8
-```
-## 3. Componentes utilizados 
+{Adicionar nova arquitetura (TODO: tree --gitignore)}
+
+## 3. Componentes utilizados
 
 - Raspberry pi 5 ou microcomputador similar
 - Fonte de alimentação USB-C 27 W para Raspberry pi 5
@@ -200,119 +136,117 @@ tcc-scrum-masters/                                  # Diretório raiz do projeto
 
 ### Procedimento de Instalação e Configuração
 
-* **Instale Pacotes do Sistema Host:**
-```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y curl wget git jq tree python3-pip python3-venv libcamera-tools
+> Para saber porque cada dependencia é necessária, acesse {TODO: Adicionar pagina da wiki com dependencias e explicações depois}
 
+#### Instalando as dependencias do sistema
+No raspberry pi, em um terminal:
+```bash
+sudo apt update
+sudo apt install -y python3-opencv python3-picamera2 portaudio19-dev
 ```
 
----
-
-#### Configuração do Docker e Docker Compose
-
-Para isolar a aplicação em containers leves e evitar desgaste do cartão SD faça as seguintes instalações:
-
-**Instalação do Docker:**
+#### Instalando as dependencias do projeto
+No raspberry pi, crie um ambiente virtual:
 ```bash
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
+python3 -m venv .venv
+```
+e depois ative ele:
+```bash
+source .venv/bin/activate
 ```
 
-
-**Permissão de Usuário sem `sudo`:**
-```bash
-sudo usermod -aG docker $USER
-
-```
-
-
-(Efetue logout e login novamente para aplicar a alteração).
-
-
-**Validação do Docker:**
-```bash
-docker version
-docker run --rm hello-world
-
-```
-
----
-
-#### Instalação das Dependências Python e MLOps (Ambiente de Desenvolvimento)
-
-Caso precise rodar testes ou validações diretamente no host ou em um ambiente virtual Python (`venv`):
-
-**Crie e Ative um Ambiente Virtual:**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-
-```
-
-
-**Instalação das Bibliotecas de Aprendizado e IA:**
-
-Para instalar as bibliotecas utilizadas basta rodar o comando
-
-```bash
-pip install -r app/requirements.txt
-
-```
-**Construa as Imagens Multi-Arquitetura (ARM64) e Inicialização dos Serviços:**
-```bash
-docker compose build
-docker compose up -d
-
-```
-
-**Por fim, Faça a Verificação do Status dos Serviços:**
-```bash
-docker compose ps
-curl -f http://localhost:8000/health
-
-```
----
 ## 6. Comandos e Procedimento para Execução
 
-### Testando a PoC:
+### Executando:
+#### Visualização pelo terminal:
 
-Para testar a nossa PoC, com o repositório e todas as dependências instaladas, execute:
+com o repositório, com todas as dependências instaladas e dentro do ambiente virtual (venv), execute:
+
+```bash
+python3 classification.py
+```
+o que irá iniciar o programa, e o log poderá ser visto no terminal.
+
+#### Visualizando pelo navegador:
 
 Para conectar ao seu dispositivo:
+
 ```bash
-ssh <ip do seu raspberry pi 5>
+python3 classification_interface.py
+```
+depois, no seu navegador web de preferencia, na barra de url, digite:
 
 ```
-Para acessar o projeto:
+http://<ip do raspberry pi>:8000
+```
+- Substitua <ip do seu raspberry pi>, pelo ip real do seu raspberry pi
 
+#### Utilizar um vídeo pré-gravado para visualizar
+Se preferir utilizar um vídeo pré-feito para testar, no terminal:
 ```bash
 cd <caminho da pasta do projeto>
 ```
-Para realizar a inferência da imagem de uma garrafa a partir de um vídeo:
+Depois:
+
 ```bash
 python3 stream/video_visualize.py --input <caminho do vídeo no seu dispositivo> --output <nome do vídeo após a inferência> --model models/best.pt --no-display
 ```
+- substitua o "<caminho do vídeo no seu dispositivo>", pelo lugar aonde está o video que será analisado;
+- substitua o " <nome do vídeo após a inferência>", para indicar o nome e local aonde será salvo o vídeo;
 
-Depois rode novamente cd com o caminho da pasta do projeto caso esteja em outra pasta e ls para verificar se o arquivo foi criado. Após isso ao assistir o vídeo você verá a inferência e sua classificação sendo exibidas no momento da execução.
-
-Também é possível fazer o teste com imagens, tendo todas as dependências instaladas, basta usar o comando:
+##### Vendo o resultado:
+Caso não possa ver o video pelo seu raspberry (Por exemplo, está no modo somente terminal).
+Para visualizar o video, precisamos transferir do seu raspberry pi para sua máquina local.
+Na sua maquina, abra o terminal, e digite:
 ```bash
-yolo predict model=runs/epi-v1-cls3/weights/best.pt (o caminho do modelo l) source=garrafa.jpg (a imagem que você quer escolher)
+scp <username do raspberry>@<ip do raspberry>:~/<local aonde foi salvo o video> <Aonde será enviado o video no seu computador>
 ```
-Para fazer download do vídeo e da imagem para teste, acesse: https://drive.google.com/drive/folders/1UVhUWeMSqkuLZVQD1KXtWIFyr2M3RvUF?usp=sharing
 
+#### Utilizar uma imagemm pré-feita para visualizar: 
+
+Também é possível fazer o teste com imagens pré-feitas, tendo todas as dependências instaladas, basta usar o comando:
+```bash
+python3 stream/image_visualize model=runs/<Nome do modelo>/weights/best.pt source=<caminho da imagem>
+```
+- substitua <Nome do modelo>, pelo nome do modelo que queira utilizar para a analise;
+- substitua <caminho da imagem>, pelo nome e caminho da imagem a ser utilizado;
 ---
-## 7. Cofirmação do resultado
+
+##### Vendo o resultado:
+Caso não possa ver a imagem pelo seu raspberry (Por exemplo, está no modo somente terminal).
+Para visualizar a imagem, precisamos transferir do seu raspberry pi para sua máquina local.
+Na sua maquina, abra o terminal, e digite:
+```bash
+scp <username do raspberry>@<ip do raspberry>:~/<local aonde foi salvo a imagem> <Aonde será enviado a imagem no seu computador>
+```
+
+## 7. Integrando os dados com o grafena
+
+> [!WARNING]
+> Estamos considerando que está a fazer essa configuração no raspberry pi
+
+A integração com o grafena é bastante simples.
+Para integrar com o grafena, iremos utilizar o cliente prometheus:
+Para instalar, va para https://prometheus.io/download/
+selecione em `Operating System` como `Linux` 
+Selecione em `Architecture` como `arm64`
+Faça o download da versão que contenha `LTS`
+depois, no terminal, extraia o arquivo instalado:
+```bash
+tar -xvzf <arquivo a ser extraido>
+```
+TODO: Estudando conteinerização com container prometheus
+
+
+
+## 8. Cofirmação do resultado
 
 A confirmação do resultado na PoC pode ser visualizada no terminal durante o treinamento e nas imagens ou vídeos pós treinamento com a porcentagem da inferência e a respectiva classificação. 
 
 Os resultados do projeto final serão informados posteriormente após a conclusão do projeto.
 
 ---
-## 8. Diagrama de blocos
+## 9. Diagrama de blocos
 
 O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. A plataforma utilizada para desenvolvê-lo foi o Miro.
 
