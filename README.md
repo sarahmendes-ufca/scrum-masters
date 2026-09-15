@@ -1,3 +1,5 @@
+# scrum-masters
+
 # 📦 TCC CENÁRIO 3: Visão Computacional para Detecção de Defeitos em Embalagens de Produtos
 
 ### 👤 Identificação da Equipe
@@ -165,11 +167,11 @@ com o repositório, com todas as dependências instaladas e dentro do ambiente v
 ```bash
 python3 classification.py
 ```
-o que irá iniciar o programa, e o log poderá ser visto no terminal.
+o que irá iniciar o programa, e o log do que a camerâ está vendo, poderá ser visto no terminal através de um log.
 
 #### Visualizando pelo navegador:
 
-Para conectar ao seu dispositivo:
+Para ver no navegador, no raspberry pi, dentro do ambiente virtual:
 
 ```bash
 python3 classification_interface.py
@@ -204,7 +206,7 @@ scp <username do raspberry>@<ip do raspberry>:~/<local aonde foi salvo o video> 
 
 #### Utilizar uma imagemm pré-feita para visualizar: 
 
-Também é possível fazer o teste com imagens pré-feitas, tendo todas as dependências instaladas, basta usar o comando:
+Também é possível fazer o teste com imagens pré-feitas, basta usar o comando:
 ```bash
 python3 stream/image_visualize model=runs/<Nome do modelo>/weights/best.pt source=<caminho da imagem>
 ```
@@ -225,18 +227,105 @@ scp <username do raspberry>@<ip do raspberry>:~/<local aonde foi salvo a imagem>
 > [!WARNING]
 > Estamos considerando que está a fazer essa configuração no raspberry pi
 
+### Instalação
 A integração com o grafena é bastante simples.
-Para integrar com o grafena, iremos utilizar o cliente prometheus:
-Para instalar, va para https://prometheus.io/download/
-selecione em `Operating System` como `Linux` 
-Selecione em `Architecture` como `arm64`
-Faça o download da versão que contenha `LTS`
-depois, no terminal, extraia o arquivo instalado:
+Para integrar com o grafena, iremos utilizar o cliente prometheus, com o grafana alloy. para isso, vamos instalar as dependências:
 ```bash
-tar -xvzf <arquivo a ser extraido>
+sudo apt update
+sudo apt install -y gpg wget
 ```
 
+agora vamos adicionar o repositorio do grafana ao apt do rasp:
+```bash
+echo "deb [signed-by=/usr/share/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
+```
 
+Finalmente, vamos instalar o grafana alloy:
+```bash
+sudo apt update
+sudo apt install -y alloy
+```
+
+Para ter certeza que está funcionando, veja se esta habilitado (deve mostrar `running`)
+
+```bash
+sudo systemctl enable alloy.service # garante que vai ficar habilitado mesmo que o sistema reinicie
+sudo systemctl start alloy.service # Inicia o serviço caso não tenha iniciado ainda
+sudo systemctl status alloy.service # Verifica o status
+```
+
+### Configuração
+Para começar, iremos criar variaveis de ambiente para o alloy, isso deixa a configuração mais organizada e legível.
+Acesse como super usuario:
+
+```bash
+sudo nano /etc/alloy/config.alloy
+```
+
+e adicione no final do arquivo (se já ouver alguma das linhas, ignore e não copie a linha que já tiver no arquivo, o resto copie), o seguinte:
+```text
+CONFIG_FILE="/etc/alloy/config.alloy"
+CUSTOM_ARGS="--disable-reporting"
+
+GRAFANA_CLOUD_URL="<sua_url_do_prometheus>"
+GRAFANA_CLOUD_USERNAME="<seu_id_de_usuario_do_prometheus>"
+GRAFANA_CLOUD_TOKEN="<seu_token_do_prometheus>"
+```
+
+> Substitua oque esta entre "<" ">", pelos dados pedidos. Se não souber como fazer, pode ver nosso tutorial
+> em TODO:wiki_page ou na página oficial do grafana labs prometheus: [Documentação oficial](https://grafana.com/docs/grafana/latest/datasources/prometheus/configure/)
+> aviso dado, porquê configurar errado os dados do prometheus é algo comum.
+
+Restrinja a leitura e edição para apenas super-usuários(`sudo`):
+
+```bash
+sudo chmod 600 /etc/default/alloy
+```
+
+Agora, vamos referenciar oque colocamos no arquivo anterior, para efetivamente conectar ao grafana.
+como super  usuário, abra:
+
+```bash
+sudo nano /etc/alloy/config.alloy
+```
+
+e substitua oque tiver no arquivo por:
+
+```text
+prometheus.scrape "node_exporter" {
+  targets = [{ "__address__" = "localhost:9100" }]
+  forward_to = [prometheus.remote_write.grafana_cloud.receiver]
+}
+
+prometheus.scrape "yolo_metrics" {
+  targets = [{ "__address__" = "localhost:8000" }]
+  forward_to = [prometheus.remote_write.grafana_cloud.receiver]
+}
+
+prometheus.remote_write "grafana_cloud" {
+  endpoint {
+    url = sys.env("GRAFANA_CLOUD_URL")
+
+    basic_auth {
+      username = sys.env("GRAFANA_CLOUD_USERNAME")
+      password = sys.env("GRAFANA_CLOUD_TOKEN")
+    }
+  }
+}
+```
+
+Feito isso, reinicie o serviço do alloy:
+```bash
+sudo systemctl restart alloy.service
+```
+Confirme que esta carregado (`running`):
+```bash
+sudo systemctl status alloy.service
+```
+e verifique o log do alloy, para ver se tudo está indo certo:
+```bash
+sudo journalctl -u alloy -n 30 --no-pager
+```
 
 ## 8. Cofirmação do resultado
 
@@ -253,3 +342,4 @@ Por fim, como saída temos as informações expressas no dashboard, a notificaç
 <img width="1029" height="1518" alt="Meu primeiro board" src="https://github.com/user-attachments/assets/a050302a-7d85-4d7e-8f2d-2a44df469123" />
 
 ---
+
