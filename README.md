@@ -73,12 +73,29 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 ```
 
 ---
-### 2.1 Oque os scripts fazem
+### 2.1 Scripts 
 
 `classificador.py`:
-- realiza a inspeção e o monitoramento do processo em tempo real
+Este script roda nos bastidores do hardware (como a Raspberry Pi 5). Ele é focado na extração de dados e na execução da inteligência artificial.
+
+Captura de Imagem: Inicializa e controla o módulo de câmera nativo (via Picamera2) para capturar o fluxo de vídeo contínuo da linha de inspeção, como uma esteira industrial.
+
+Execução do Modelo: Carrega o modelo compilado do Edge Impulse (o arquivo .eim) e aplica a rede neural a cada frame capturado no intervalo de tempo definido (ex: a cada 100ms).
+
+Processamento Analítico: Analisa os dados da imagem em tempo real para detectar padrões, classificar objetos e identificar possíveis anomalias ou defeitos na linha de produção.
+
+Geração de Telemetria: Produz os dados brutos de detecção (coordenadas, classes, nível de confiança) e métricas de desempenho que podem ser expostas para ferramentas de observabilidade, como o Prometheus.
+
 `classificador_interface`: 
-- enquanto classificador_interface.py apresenta visualmente pelo navegador web, em tempo real, os resultados das inspeções realizadas pela IA.
+Este script pega os dados gerados pelo classificador e os transforma em uma experiência visual acessível, geralmente rodando um servidor web local (utilizando frameworks como FastAPI).
+
+Renderização de Anotações: Sobrepõe os resultados da IA no fluxo de vídeo, desenhando caixas delimitadoras (bounding boxes) e textos indicativos em cima dos objetos detectados.
+
+Streaming Web: Empacota os frames de vídeo já anotados e os transmite de forma contínua para um navegador web, garantindo baixa latência.
+
+Dashboard de Operação: Fornece a estrutura da página HTML/CSS/JS onde o usuário final pode monitorar o status das inspeções instantaneamente, sem precisar acessar o terminal de comandos.
+
+Integração de Dados: Pode gerenciar os endpoints que alimentam painéis de controle externos (como dashboards no Grafana) com o histórico de classificações e alertas visuais.
 
 ---
 
