@@ -17,7 +17,7 @@ CLASSIFICACAO_LOGS = Counter(
     ["classificacao"],
 )
 
-caminho_modelo = "./modelfile.eim"
+caminho_modelo = "../models/modelfile.eim"
 
 
 def main():
