@@ -376,16 +376,19 @@ O projeto inclui por padrão, as seguintes métricas para o grafana:
 - `classificador_produtos_avaliados_total`
 - `classificador_logs_por_classificacao_total`
 
-Serão as métricas acima que iramos visualizar, para poder fazer isso acesse:
-{TODO: grafana_explore1}
-{TODO: grafana_explore2}
+Serão as métricas acima que iremos visualizar, para poder fazer isso acesse:
+<img width="323" height="939" alt="grafana_explore1" src="https://github.com/user-attachments/assets/8f8573f1-035b-45ae-8865-f110a93d8091" />
 
+---
+<img width="1568" height="333" alt="grafana_explore2" src="https://github.com/user-attachments/assets/c73c6dd8-f8df-438c-bc4d-c8576f8f7750" />
+
+---
 e coloque uma métrica a ser avaliada:
-{TODO: grafana_explore3}
+<img width="1398" height="169" alt="grafana_explore3" src="https://github.com/user-attachments/assets/12d8ac02-27ce-4d18-9a98-8e1cdc731342" />
 
 e para ver o gráfico, s  elecione 'Run Query':
 
-{TODO: grafana_explore4}
+<img width="801" height="147" alt="grafana_explore4" src="https://github.com/user-attachments/assets/90e13264-660b-4bfc-8060-0a2eff1b88b8" />
 
 Para criar seus próprios painéis (dashboards), pode-se ler a documentação oficial do grafana para isso:
 [Documentação oficial do grafana](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/create-dashboard/)
