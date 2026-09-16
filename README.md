@@ -23,7 +23,7 @@
 > Substituido <ip do raspeberry pi> por 100.95.153.33
 ---
 
-## 1. Visão Geral da Solução
+## Visão Geral da Solução
 
 No ambiente fabril, a etapa de rotulagem na fase final da confecção de produtos frequentemente apresenta gargalos operacionais. Embora seja um processo automatizado, os equipamentos estão sujeitos a falhas. A eventual transferência de produtos defeituosos da esteira de produção para a distribuidora e, consequentemente, para o consumidor final, acarreta insatisfação, prejuízos à credibilidade da marca e perda da confiança na linha de produtos. Adicionalmente, o rótulo constitui a principal fonte de dados para o consumidor, contendo informações essenciais como instruções de uso e prazo de validade; a ausência ou baixa legibilidade desses itens representa um problema crítico de qualidade e conformidade.
 
@@ -33,7 +33,7 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ---
 
-## 2️. Arquitetura do Sistema
+## Arquitetura do Sistema
 
 ```bash
 .
@@ -45,8 +45,17 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
     ├── classificador.py
     └── requirements.txt
 ```
+
 ---
-## 3. Componentes utilizados
+## Oque os scripts fazer
+
+`classificador.py`:
+- realiza a inspeção e o monitoramento do processo em tempo real
+`classificador_interface`: 
+- enquanto classificador_interface.py apresenta visualmente pelo navegador web, em tempo real, os resultados das inspeções realizadas pela IA.
+
+---
+## Componentes utilizados
 
 - Raspberry pi 5 ou microcomputador similar
 - Fonte de alimentação USB-C 27 W para Raspberry pi 5
@@ -55,27 +64,27 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 - Cartão de Memória MicroSDXC 128 GB, classificação A2/V30
 ---
 
-## 4. Pré-requisitos e Recursos
+## Pré-requisitos e Recursos
 
 ### Hardware, Dispositivos e Infraestrutura
 
-- **Placa Principal:** - Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
+- **Placa Principal:** Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
 
-- **Câmera:** - Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
+- **Câmera:** Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
 
-- **Alimentação:** - Fonte oficial USB-C 27 W para Raspberry Pi 5.
+- **Alimentação:** Fonte oficial USB-C 27 W para Raspberry Pi 5.
 
-- **Armazenamento:** - Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
+- **Armazenamento:** Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
 
 
 ### Software de Sistema e Drivers de Captura
 
-- **Sistema Operacional:*- Raspberry Pi OS 64-bit (Debian Trixie).
+- **Sistema Operacional:** Raspberry Pi OS 64-bit (Debian Trixie).
 
-- **Drivers & Utilitários de Vídeo:*- V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
+- **Drivers & Utilitários de Vídeo:** V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
 
 ---
-## 5. Dependências
+## Dependências
 
 ### Linguagem e Frameworks Web / Servidores
 
@@ -167,7 +176,7 @@ pip install -r requirements.txt
 >  sudo apt install python3-pip
 > ```
 
-## 6. Procedimento para Execução
+## Procedimento para Execução
 
 ### Visualização pelo terminal:
 
@@ -193,7 +202,7 @@ http://<ip do raspberry pi>:1337
 > Substitua <ip do seu raspberry pi>, pelo ip real do seu raspberry pi
 
 
-## 7. Integrando os dados com o grafana
+## Integrando os dados com o grafana
 
 ### Porque usar o grafana
 
@@ -305,7 +314,7 @@ e verifique o log do alloy, para ver se tudo está indo certo:
 sudo journalctl -u alloy -n 30 --no-pager
 ```
 
-## 8. Visualizando os dados no grafana
+## Visualizando os dados no grafana
 
 Com os passos anteriores feitos, podemos começar a fazer o seu dashboard no grafana.
 Escolha se prefere rodar `classificador.py` ou `classificador_interface`
@@ -337,7 +346,7 @@ e para ver o gráfico, selecione `Run Query`:
 Para criar seus próprios painéis (dashboards), pode-se ler a documentação oficial do grafana para isso:
 [Documentação oficial do grafana](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/create-dashboard/)
 
-## 9. Cofirmação do resultado
+## Cofirmação do resultado
 
 Visualização do projeto rodando:
 
@@ -355,7 +364,7 @@ Graficos de demonstração em um painel(dashboard) no grafana:
 {TODO: resu5}
 
 ---
-## 10. Diagrama de blocos
+## Diagrama de blocos
 
 O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. A plataforma utilizada para desenvolvê-lo foi o Miro.
 
