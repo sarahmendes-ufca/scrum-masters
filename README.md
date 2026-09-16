@@ -375,6 +375,13 @@ Para criar seus próprios painéis (dashboards), pode-se ler a documentação of
 
 ## 9 Cofirmação do resultado
 
+Saída do terminal com a captura em tempo real
+
+<img width="1512" height="222" alt="cap2" src="https://github.com/user-attachments/assets/6ee8fc0d-c91d-4fa5-8b7b-65955eb67a4b" />
+
+---
+<img width="1442" height="217" alt="cap1" src="https://github.com/user-attachments/assets/c86106e4-819b-4808-8c39-5d715cbee716" />
+
 ---
 Graficos de demonstração em um painel(dashboard) no grafana:
 
