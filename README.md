@@ -13,34 +13,7 @@
 ---
 
 ## 📌 Sumário
-
-- [1. Visão Geral da Solução](#1-visão-geral-da-solução)
-- [2. Arquitetura do Sistema](#2-arquitetura-do-sistema)
-- [3. Componentes utilizados](#3-componentes-utilizados)
-- [4. Pré-requisitos e Recursos](#4-pré-requisitos-e-recursos)
-
-  - [4.1 Hardware, Dispositivos e Infraestrutura](#41-hardware-dispositivos-e-infraestrutura)
-  - [4.2 Software de Sistema e Drivers de Captura](#42-software-de-sistema-e-drivers-de-captura)
-- [5. Dependências e procedimento de instalação](#5-dependências-e-procedimento-de-instalação)
-
-  - [5.1 Linguagem e Frameworks Web / Servidores](#51-linguagem-e-frameworks-web--servidores)
-  - [5.2 Visão Computacional, IA e Processamento Matemático](#52-visão-computacional-ia-e-processamento-matemático)
-  - [5.3 MLOps, Engenharia de Dados e Observabilidade](#53-mlops-engenharia-de-dados-e-observabilidade)
-  - [5.4 Conteinerização, Rede e CI/CD](#54-conteinerização-rede-e-cicd)
-  - [5.5 Procedimento de Instalação e Configuração](#55-procedimento-de-instalação-e-configuração)
-- [6. Comandos e Procedimento para Execução](#6-comandos-e-procedimento-para-execução)
-
-  - [6.1 Visualização pelo terminal](#61-visualização-pelo-terminal)
-  - [6.2 Visualização pelo navegador](#62-visualização-pelo-navegador)
-  - [6.3 Utilização de vídeo pré-gravado](#63-utilização-de-vídeo-pré-gravado)
-  - [6.4 Utilização de imagem pré-gravada](#64-utilização-de-imagem-pré-gravada)
-- [7. Integrando os dados com o Grafana](#7-integrando-os-dados-com-o-grafana)
-
-  - [7.1 Instalação](#71-instalação)
-  - [7.2 Configuração](#72-configuração)
-- [8. Confirmação do resultado](#8-confirmação-do-resultado)
-- [9. Diagrama de blocos](#9-diagrama-de-blocos)
-
+{TODO: sumario}
 ---
 
 > [!WARNING]
@@ -140,8 +113,6 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ### Testes e Qualidade
 
-- **Testes:** Pytest, quando utilizado para testes automatizados dos componentes Python do projeto.
-
 - **Linting:** Ruff, quando utilizado para análise estática e padronização do código Python.
 
 - **Logs:** Logs utilizando a saída padrão da aplicação para acompanhamento da execução, inferências e alertas do classificador.
@@ -219,53 +190,22 @@ depois, no seu navegador web de preferencia, na barra de url, digite:
 ```
 http://<ip do raspberry pi>:1337
 ```
-- Substitua <ip do seu raspberry pi>, pelo ip real do seu raspberry pi
+> Substitua <ip do seu raspberry pi>, pelo ip real do seu raspberry pi
 
-### Utilizar um vídeo pré-gravado para visualizar
-Se preferir utilizar um vídeo pré-feito para testar, no terminal:
-```bash
-cd <caminho da pasta do projeto>
-```
-Depois:
 
-```bash
-python3 stream/video_visualize.py --input <caminho do vídeo no seu dispositivo> --output <nome do vídeo após a inferência> --model models/.pt --no-display
-```
-- substitua o "<caminho do vídeo no seu dispositivo>", pelo lugar aonde está o video que será analisado;
-- substitua o " <nome do vídeo após a inferência>", para indicar o nome e local aonde será salvo o vídeo;
+## 7. Integrando os dados com o grafana
 
-#### Vendo o resultado:
-Caso não possa ver o video pelo seu raspberry (Por exemplo, está no modo somente terminal).
-Para visualizar o video, precisamos transferir do seu raspberry pi para sua máquina local.
-Na sua maquina, abra o terminal, e digite:
-```bash
-scp <username do raspberry>@<ip do raspberry>:~/<local aonde foi salvo o video> <Aonde será enviado o video no seu computador>
-```
+### Porque usar o grafana
 
-### Utilizar uma imagem pré-feita para visualizar: 
+o grafana é uma ferramente poderosa, que permite visualizar gráficos em tempo real, fazer alertas customizáveis, e definir quem pode receber os alertas e ver os gráfocos,
+sua introdução ao sistema é extremamente útil no monitoramento dos produtos.
 
-Também é possível fazer o teste com imagens pré-feitas, basta usar o comando:
-```bash
-python3 stream/image_visualize model=runs/<Nome do modelo>/weights/best.pt source=<caminho da imagem>
-```
-- substitua <Nome do modelo>, pelo nome do modelo que queira utilizar para a analise;
-- substitua <caminho da imagem>, pelo nome e caminho da imagem a ser utilizado;
----
-
-#### Vendo o resultado:
-Caso não possa ver a imagem pelo seu raspberry (Por exemplo, está no modo somente terminal).
-Para visualizar a imagem, precisamos transferir do seu raspberry pi para sua máquina local.
-Na sua maquina, abra o terminal, e digite:
-```bash
-scp <username do raspberry>@<ip do raspberry>:~/<local aonde foi salvo a imagem> <Aonde será enviado a imagem no seu computador>
-```
-
-## 7. Integrando os dados com a grafana
+--- 
+### Instalação
 
 > [!WARNING]
 > Estamos considerando que está a fazer essa configuração no raspberry pi
 
-### Instalação
 A integração com o grafana é bastante simples.
 Para integrar com o grafana, iremos utilizar o cliente prometheus, com o grafana alloy. para isso, vamos instalar as dependências:
 ```bash
@@ -365,7 +305,7 @@ e verifique o log do alloy, para ver se tudo está indo certo:
 sudo journalctl -u alloy -n 30 --no-pager
 ```
 
-## Visualizando os dados no grafana
+## 8. Visualizando os dados no grafana
 
 Com os passos anteriores feitos, podemos começar a fazer o seu dashboard no grafana.
 Escolha se prefere rodar `classificador.py` ou `classificador_interface`
@@ -377,6 +317,7 @@ O projeto inclui por padrão, as seguintes métricas para o grafana:
 - `classificador_logs_por_classificacao_total`
 
 Serão as métricas acima que iremos visualizar, para poder fazer isso acesse:
+
 <img width="323" height="939" alt="grafana_explore1" src="https://github.com/user-attachments/assets/8f8573f1-035b-45ae-8865-f110a93d8091" />
 
 ---
@@ -384,20 +325,37 @@ Serão as métricas acima que iremos visualizar, para poder fazer isso acesse:
 
 ---
 e coloque uma métrica a ser avaliada:
+
 <img width="1398" height="169" alt="grafana_explore3" src="https://github.com/user-attachments/assets/12d8ac02-27ce-4d18-9a98-8e1cdc731342" />
 
-e para ver o gráfico, s  elecione 'Run Query':
+---
+e para ver o gráfico, selecione `Run Query`:
 
 <img width="801" height="147" alt="grafana_explore4" src="https://github.com/user-attachments/assets/90e13264-660b-4bfc-8060-0a2eff1b88b8" />
 
+---
 Para criar seus próprios painéis (dashboards), pode-se ler a documentação oficial do grafana para isso:
 [Documentação oficial do grafana](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/create-dashboard/)
 
-## 8. Cofirmação do resultado
+## 9. Cofirmação do resultado
 
+Visualização do projeto rodando:
+
+Resultado no terminal:
+{TODO: resu1}
 
 ---
-## 9. Diagrama de blocos
+Resultado na web:
+{TODO: resu2}
+
+---
+Graficos de demonstração em um painel(dashboard) no grafana:
+{TODO: resu3}
+{TODO: resu4}
+{TODO: resu5}
+
+---
+## 10. Diagrama de blocos
 
 O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. A plataforma utilizada para desenvolvê-lo foi o Miro.
 
