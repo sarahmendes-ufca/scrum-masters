@@ -375,22 +375,6 @@ Para criar seus próprios painéis (dashboards), pode-se ler a documentação of
 
 ## 9 Cofirmação do resultado
 
-Resultado no terminal:
-<img width="1600" height="720" alt="WhatsApp Image 2026-09-16 at 18 16 08 (1)" src="https://github.com/user-attachments/assets/c8608472-0db4-4d9f-b2fc-38c9f164fa8f" />
-Resposta com alerta de desvio no terminal em caso de rótulo ausente
-
-<img width="1600" height="720" alt="WhatsApp Image 2026-09-16 at 18 16 08 (2)" src="https://github.com/user-attachments/assets/1ca2ee38-3f95-41ac-a8f1-d86a69fe8f2f" />
-Saída do terminal em caso de rótulo íntegro
-
----
-Resultado na web:
-<img width="1600" height="720" alt="WhatsApp Image 2026-09-16 at 18 16 08" src="https://github.com/user-attachments/assets/ae9ed4d8-6dd8-4b3b-a1be-0f6aa1d69f5c" />
-Interface com a captura e classificação em produto com rótulo danificado
-
-<img width="1200" height="1600" alt="WhatsApp Image 2026-09-16 at 14 59 31" src="https://github.com/user-attachments/assets/b47203a2-d671-416d-9d77-3b5943b60832" />
-Interface com a captura e classificação em produto com rótulo ausente
-
----
 ---
 Graficos de demonstração em um painel(dashboard) no grafana:
 
