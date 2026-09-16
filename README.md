@@ -43,8 +43,14 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ## 2️. Arquitetura do Sistema
 
-{Adicionar nova arquitetura (TODO: tree --gitignore)}
+.
+├── classificador_interface.py
+├── classificador.py
+├── modelfile.eim
+├── README.md
+└── requirements.txt
 
+---
 ## 3. Componentes utilizados
 
 - Raspberry pi 5 ou microcomputador similar
@@ -53,19 +59,18 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 - Cabo adaptador CSI para câmera do Raspberry pi
 - Cartão de Memória MicroSDXC 128 GB, classificação A2/V30
 ---
+
 ## 4. Pré-requisitos e Recursos
 
 ### Hardware, Dispositivos e Infraestrutura
 
-* **Placa Principal:** Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
+- **Placa Principal:** Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
 
-* **Câmera:** Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
+- **Câmera:** Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
 
+- **Alimentação:** Fonte oficial USB-C 27 W para Raspberry Pi 5.
 
-* **Alimentação:** Fonte oficial USB-C 27 W para Raspberry Pi 5.
-
-
-* **Armazenamento:** Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
+- **Armazenamento:** Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
 
 
 ### Software de Sistema e Drivers de Captura
