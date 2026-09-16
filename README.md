@@ -383,6 +383,10 @@ Saída do terminal com a captura em tempo real
 <img width="1442" height="217" alt="cap1" src="https://github.com/user-attachments/assets/c86106e4-819b-4808-8c39-5d715cbee716" />
 
 ---
+Interface gráfica com exibição do resultado da inferência
+<img width="1009" height="589" alt="WhatsApp Image 2026-09-16 at 19 43 22" src="https://github.com/user-attachments/assets/ec3e32a4-7597-487b-ab50-7e55351ca8cc" />
+
+---
 Graficos de demonstração em um painel(dashboard) no grafana:
 
 <img width="1519" height="662" alt="resu1" src="https://github.com/user-attachments/assets/221882cd-4240-4dd5-9854-f7891d0fb56d" />
