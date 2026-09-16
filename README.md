@@ -11,7 +11,35 @@
 ---
 
 ## 📌 Sumário
-{TODO: sumario}
+
+- [1. Visão Geral da Solução](#1-visão-geral-da-solução)
+- [2. Arquitetura do Sistema](#2-arquitetura-do-sistema)
+  - [2.1. O que os scripts fazem](#21-o-que-os-scripts-fazem)
+- [3. Pré-requisitos e Recursos](#3-pré-requisitos-e-recursos)
+  - [3.1. Componentes Utilizados](#31-componentes-utilizados)
+  - [3.2. Hardware, Dispositivos e Infraestrutura](#32-hardware-dispositivos-e-infraestrutura)
+  - [3.3. Software de Sistema e Drivers de Captura](#33-software-de-sistema-e-drivers-de-captura)
+- [4. Dependências](#4-dependências)
+  - [4.1. Linguagem e Frameworks Web / Servidores](#41-linguagem-e-frameworks-web--servidores)
+  - [4.2. Visão Computacional, IA e Processamento de Imagem](#42-visão-computacional-ia-e-processamento-de-imagem)
+  - [4.3. MLOps, Engenharia de Dados e Observabilidade](#43-mlops-engenharia-de-dados-e-observabilidade)
+  - [4.4. Conteinerização, Rede e CI/CD](#44-conteinerização-rede-e-cicd)
+  - [4.5. Testes e Qualidade](#45-testes-e-qualidade)
+- [5. Procedimento de Instalação e Configuração](#5-procedimento-de-instalação-e-configuração)
+  - [5.1. Instalando as dependências do sistema](#51-instalando-as-dependências-do-sistema)
+    - [5.1.1. Motivo de cada dependência](#511-motivo-de-cada-dependência)
+  - [5.2. Instalando as dependências do projeto](#52-instalando-as-dependências-do-projeto)
+- [6. Procedimento para Execução](#6-procedimento-para-execução)
+  - [6.1. Visualização pelo terminal](#61-visualização-pelo-terminal)
+  - [6.2. Visualizando pelo navegador](#62-visualizando-pelo-navegador)
+- [7. Integrando os dados com o Grafana](#7-integrando-os-dados-com-o-grafana)
+  - [7.1. Por que usar o Grafana](#71-por-que-usar-o-grafana)
+  - [7.2. Instalação](#72-instalação)
+  - [7.3. Configuração](#73-configuração)
+- [8. Visualizando os dados no Grafana](#8-visualizando-os-dados-no-grafana)
+- [9. Confirmação do Resultado](#9-confirmação-do-resultado)
+- [10. Diagrama de Blocos](#10-diagrama-de-blocos)
+
 ---
 
 > [!WARNING]
