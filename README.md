@@ -86,13 +86,13 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ### Hardware, Dispositivos e Infraestrutura
 
-- **Placa Principal:*- Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
+- **Placa Principal:** - Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
 
-- **Câmera:*- Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
+- **Câmera:** - Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
 
-- **Alimentação:*- Fonte oficial USB-C 27 W para Raspberry Pi 5.
+- **Alimentação:** - Fonte oficial USB-C 27 W para Raspberry Pi 5.
 
-- **Armazenamento:*- Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
+- **Armazenamento:** - Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
 
 
 ### Software de Sistema e Drivers de Captura
@@ -126,8 +126,6 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 - **Desenvolvimento e Treinamento do Modelo:** Edge Impulse, utilizado para preparação do dataset, treinamento, validação e exportação do modelo de classificação/detecção.
 
-- **Gestão e Anotação do Dataset:** Roboflow, utilizado na preparação e anotação das imagens utilizadas no desenvolvimento do modelo.
-
 - **Versionamento de Código:** Git e GitHub.
 
 - **Coleta de Métricas:** Prometheus Client, responsável por disponibilizar as métricas produzidas pelo classificador.
@@ -138,15 +136,7 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ### Conteinerização, Rede e CI/CD
 
-- **Contêineres:** Docker e Docker Compose, utilizados para execução e organização dos serviços que fazem parte da aplicação.
-
-- **Compilação Multiplataforma:** Docker Buildx e QEMU, utilizados quando necessário para construção de imagens compatíveis com a arquitetura ARM64 da Raspberry Pi 5.
-
-- **Registro de Imagens:** GitHub Container Registry (GHCR).
-
 - **Rede / VPN Mesh:** Tailscale, utilizado para acesso remoto à Raspberry Pi e comunicação entre os dispositivos da infraestrutura.
-
-- **CI/CD:** GitHub Actions, utilizado para automação dos processos de versionamento e integração/entrega do projeto.
 
 ### Testes e Qualidade
 
@@ -179,6 +169,7 @@ sudo apt install -y python3-opencv python3-picamera2 portaudio19-dev
 
 ### Instalando as dependencias do projeto
 No raspberry pi, crie um ambiente virtual:
+
 > [!WARNING]
 > Daqui em diante, sempre execute os comando estando dentro do ambiente virtual
 > Instalar depedencias com pip fora de um, pode acarretar a problemas sérios no sistema operacional
@@ -191,8 +182,8 @@ e depois ative ele:
 source .venv/bin/activate
 ```
 > [!WARNING]
-> Apenas instale os comando estando dentro do ambiente virtual
-> Instalar depedencias com pip fora de um, pode acarretar a problemas sérios no sistema operacional
+> Apenas instale os comandos estando dentro do ambiente virtual
+> Instalar depedencias com pip fora de um ambiente virtual, pode acarretar a problemas sérios no sistema operacional.
 
 após isso, instalamos as dependências do projeto:
 
@@ -212,21 +203,21 @@ pip install -r requirements.txt
 com o repositório, com todas as dependências instaladas e dentro do ambiente virtual (venv), execute:
 
 ```bash
-python3 classification.py
+python3 scripts/classification.py
 ```
-o que irá iniciar o programa, e o log do que a camerâ está vendo, poderá ser visto no terminal através de um log.
+o que irá iniciar o programa, e o log do que a camerâ está classificando, poderá ser visto no terminal através dos logs.
 
 ### Visualizando pelo navegador:
 
-Para ver no navegador, no raspberry pi, dentro do ambiente virtual:
+Para ver no navegador, no raspberry pi, dentro do ambiente virtual. Execute:
 
 ```bash
-python3 classification_interface.py
+python3 scripts/classification_interface.py
 ```
 depois, no seu navegador web de preferencia, na barra de url, digite:
 
 ```
-http://<ip do raspberry pi>:8000
+http://<ip do raspberry pi>:1337
 ```
 - Substitua <ip do seu raspberry pi>, pelo ip real do seu raspberry pi
 
@@ -238,7 +229,7 @@ cd <caminho da pasta do projeto>
 Depois:
 
 ```bash
-python3 stream/video_visualize.py --input <caminho do vídeo no seu dispositivo> --output <nome do vídeo após a inferência> --model models/best.pt --no-display
+python3 stream/video_visualize.py --input <caminho do vídeo no seu dispositivo> --output <nome do vídeo após a inferência> --model models/.pt --no-display
 ```
 - substitua o "<caminho do vídeo no seu dispositivo>", pelo lugar aonde está o video que será analisado;
 - substitua o " <nome do vídeo após a inferência>", para indicar o nome e local aonde será salvo o vídeo;
@@ -269,14 +260,14 @@ Na sua maquina, abra o terminal, e digite:
 scp <username do raspberry>@<ip do raspberry>:~/<local aonde foi salvo a imagem> <Aonde será enviado a imagem no seu computador>
 ```
 
-## 7. Integrando os dados com o grafena
+## 7. Integrando os dados com a grafana
 
 > [!WARNING]
 > Estamos considerando que está a fazer essa configuração no raspberry pi
 
 ### Instalação
-A integração com o grafena é bastante simples.
-Para integrar com o grafena, iremos utilizar o cliente prometheus, com o grafana alloy. para isso, vamos instalar as dependências:
+A integração com o grafana é bastante simples.
+Para integrar com o grafana, iremos utilizar o cliente prometheus, com o grafana alloy. para isso, vamos instalar as dependências:
 ```bash
 sudo apt update
 sudo apt install -y gpg wget
@@ -287,7 +278,7 @@ agora vamos adicionar o repositorio do grafana ao apt do rasp:
 echo "deb [signed-by=/usr/share/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee /etc/apt/sources.list.d/grafana.list
 ```
 
-Finalmente, vamos instalar o grafana alloy:
+com isso feito, instalamos o grafana alloy:
 ```bash
 sudo apt update
 sudo apt install -y alloy
@@ -309,7 +300,7 @@ Acesse como super usuario:
 sudo nano /etc/alloy/config.alloy
 ```
 
-e adicione no final do arquivo (se já ouver alguma das linhas, ignore e não copie a linha que já tiver no arquivo, o resto copie), o seguinte:
+e adicione no final do arquivo (se já houver alguma das linhas, ignore e não copie a linha que já tiver no arquivo, o resto copie), o seguinte:
 ```text
 CONFIG_FILE="/etc/alloy/config.alloy"
 CUSTOM_ARGS="--disable-reporting"
@@ -319,11 +310,11 @@ GRAFANA_CLOUD_USERNAME="<seu_id_de_usuario_do_prometheus>"
 GRAFANA_CLOUD_TOKEN="<seu_token_do_prometheus>"
 ```
 
-> Substitua oque esta entre "<" ">", pelos dados pedidos. Se não souber como fazer, pode ver nosso tutorial
-> em TODO:wiki_page ou na página oficial do grafana labs prometheus: [Documentação oficial](https://grafana.com/docs/grafana/latest/datasources/prometheus/configure/)
+> Substitua oque esta entre "<" ">", pelos dados pedidos. Se não souber como fazer, pode visualizar na documentação do prometheus.
+> [Documentação oficial do grafana labs prometheus](https://grafana.com/docs/grafana/latest/datasources/prometheus/configure/)
 > aviso dado, porquê configurar errado os dados do prometheus é algo comum.
 
-Restrinja a leitura e edição para apenas super-usuários(`sudo`):
+Restrinja a leitura e escrita para apenas super-usuários(`sudo`):
 
 ```bash
 sudo chmod 600 /etc/default/alloy
@@ -338,7 +329,7 @@ sudo nano /etc/alloy/config.alloy
 
 e substitua oque tiver no arquivo por:
 
-```text
+```
 prometheus.scrape "node_exporter" {
   targets = [{ "__address__" = "localhost:9100" }]
   forward_to = [prometheus.remote_write.grafana_cloud.receiver]
@@ -385,18 +376,18 @@ O projeto inclui por padrão, as seguintes métricas para o grafana:
 - `classificador_produtos_avaliados_total`
 - `classificador_logs_por_classificacao_total`
 
-Serão as métricas acima que iramos visualiar, para poder fazer isso acesse:
+Serão as métricas acima que iramos visualizar, para poder fazer isso acesse:
 {TODO: grafana_explore1}
 {TODO: grafana_explore2}
 
 e coloque uma métrica a ser avaliada:
 {TODO: grafana_explore3}
 
-e para ver o grafico, selecion 'Run Query':
+e para ver o gráfico, s  elecione 'Run Query':
 
 {TODO: grafana_explore4}
 
-Para criar seus próprios paineis (dashboards), pode-se ler a documentação oficial do grafana para isso:
+Para criar seus próprios painéis (dashboards), pode-se ler a documentação oficial do grafana para isso:
 [Documentação oficial do grafana](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/create-dashboard/)
 
 ## 8. Cofirmação do resultado

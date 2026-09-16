@@ -5,7 +5,7 @@ from picamera2 import Picamera2
 from edge_impulse_linux.image import ImageImpulseRunner
 
 app = Flask(__name__)
-    caminho_modelo = "../models/modelfile.eim"
+caminho_modelo = "./models/modelfile.eim"
 
 # Inicializa a câmera e o modelo globalmente para o servidor web
 picam2 = Picamera2()
