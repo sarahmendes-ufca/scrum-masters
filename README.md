@@ -5,7 +5,7 @@
 ### 👤 Identificação da Equipe
 - **scrum-masters**
 - **repositório: https://github.com/sarahmendes-ufca/scrum-masters**
-- **GitHub dos Membros:*- 
+- **GitHub dos Membros:** 
   - José Dhonatan Fernandes de Almeida — [`@sudo-invers`](https://github.com/sudo-invers)
   - Letícia Maria dos Santos Dias — [`@leticia-software-engineer`](https://github.com/leticia-software-engineer)
   - Sarah Mendes Teles — [`@sarahmendes-ufca`](https://github.com/sarahmendes-ufca)
@@ -23,7 +23,7 @@
 > Substituido <ip do raspeberry pi> por 100.95.153.33
 ---
 
-## Visão Geral da Solução
+## 1 -- Visão Geral da Solução
 
 No ambiente fabril, a etapa de rotulagem na fase final da confecção de produtos frequentemente apresenta gargalos operacionais. Embora seja um processo automatizado, os equipamentos estão sujeitos a falhas. A eventual transferência de produtos defeituosos da esteira de produção para a distribuidora e, consequentemente, para o consumidor final, acarreta insatisfação, prejuízos à credibilidade da marca e perda da confiança na linha de produtos. Adicionalmente, o rótulo constitui a principal fonte de dados para o consumidor, contendo informações essenciais como instruções de uso e prazo de validade; a ausência ou baixa legibilidade desses itens representa um problema crítico de qualidade e conformidade.
 
@@ -33,10 +33,10 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ---
 
-## Arquitetura do Sistema
+## 2 -- Arquitetura do Sistema
 
 ```bash
-.
+
 ├── models
 │   └── modelfile.eim
 ├── README.md
@@ -47,7 +47,7 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 ```
 
 ---
-## Oque os scripts fazer
+### 2.1 -- Oque os scripts fazem
 
 `classificador.py`:
 - realiza a inspeção e o monitoramento do processo em tempo real
@@ -55,7 +55,10 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 - enquanto classificador_interface.py apresenta visualmente pelo navegador web, em tempo real, os resultados das inspeções realizadas pela IA.
 
 ---
-## Componentes utilizados
+
+## 3 -- Pré-requisitos e Recursos
+
+### 3.1 -- Componentes utilizados
 
 - Raspberry pi 5 ou microcomputador similar
 - Fonte de alimentação USB-C 27 W para Raspberry pi 5
@@ -64,9 +67,7 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 - Cartão de Memória MicroSDXC 128 GB, classificação A2/V30
 ---
 
-## Pré-requisitos e Recursos
-
-### Hardware, Dispositivos e Infraestrutura
+### 3.2 -- Hardware, Dispositivos e Infraestrutura
 
 - **Placa Principal:** Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
 
@@ -77,16 +78,16 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 - **Armazenamento:** Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
 
 
-### Software de Sistema e Drivers de Captura
+### 3.3 -- Software de Sistema e Drivers de Captura
 
 - **Sistema Operacional:** Raspberry Pi OS 64-bit (Debian Trixie).
 
 - **Drivers & Utilitários de Vídeo:** V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
 
 ---
-## Dependências
+## 4 -- Dependências
 
-### Linguagem e Frameworks Web / Servidores
+### 4.1 -- Linguagem e Frameworks Web / Servidores
 
 - **Linguagem Base:** Python 3.11.
 
@@ -94,7 +95,7 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 - **Servidor de Métricas:** `prometheus-client`, utilizado para expor as métricas do classificador em um endpoint HTTP para coleta pelo Grafana Alloy.
 
-### Visão Computacional, IA e Processamento de Imagem
+### 4.2 -- Visão Computacional, IA e Processamento de Imagem
 
 - **Inferência de IA:** Edge Impulse Linux SDK (`edge_impulse_linux`), utilizado para carregar e executar o modelo `.eim` diretamente na Raspberry Pi 5.
 
@@ -104,7 +105,7 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 - **Processamento Numérico:** NumPy, utilizado no processamento dos frames capturados pela câmera.
 
-### MLOps, Engenharia de Dados e Observabilidade
+### 4.3 -- MLOps, Engenharia de Dados e Observabilidade
 
 - **Desenvolvimento e Treinamento do Modelo:** Edge Impulse, utilizado para preparação do dataset, treinamento, validação e exportação do modelo de classificação/detecção.
 
@@ -116,26 +117,26 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 - **Visualização e Monitoramento:** Grafana, utilizado para criação dos dashboards e acompanhamento das métricas do sistema.
 
-### Conteinerização, Rede e CI/CD
+### 4.4 -- Conteinerização, Rede e CI/CD
 
 - **Rede / VPN Mesh:** Tailscale, utilizado para acesso remoto à Raspberry Pi e comunicação entre os dispositivos da infraestrutura.
 
-### Testes e Qualidade
+### 4.5 -- Testes e Qualidade
 
 - **Linting:** Ruff, quando utilizado para análise estática e padronização do código Python.
 
 - **Logs:** Logs utilizando a saída padrão da aplicação para acompanhamento da execução, inferências e alertas do classificador.
 
-## Procedimento de Instalação e Configuração
+## 5 -- Procedimento de Instalação e Configuração
 
-### Instalando as dependencias do sistema
+### 5.1 -- Instalando as dependencias do sistema
 No raspberry pi, em um terminal:
 ```bash
 sudo apt update
 sudo apt install -y python3-opencv python3-picamera2 portaudio19-dev
 ```
 
-#### motivo de cada dependência
+#### 5.1.1 -- motivo de cada dependência
 - python3-opencv: 
   - Capturar/processar frames
   - Desenhar informações sobre os frames
@@ -147,7 +148,7 @@ sudo apt install -y python3-opencv python3-picamera2 portaudio19-dev
 - portaudio19-dev:
   - Não utilizado, mas é dependência de python3-picamera2
 
-### Instalando as dependencias do projeto
+### 5.2 -- Instalando as dependencias do projeto
 No raspberry pi, crie um ambiente virtual:
 
 > [!WARNING]
@@ -168,7 +169,7 @@ source .venv/bin/activate
 após isso, instalamos as dependências do projeto:
 
 ```bash
-pip install -r requirements.txt
+pip install -r scripts/requirements.txt
 ```
 
 > Se não possuir pip instalado no seu raspberry, instale com:
@@ -176,23 +177,23 @@ pip install -r requirements.txt
 >  sudo apt install python3-pip
 > ```
 
-## Procedimento para Execução
+## 6 -- Procedimento para Execução
 
-### Visualização pelo terminal:
+### 6.1 -- Visualização pelo terminal:
 
 com o repositório, com todas as dependências instaladas e dentro do ambiente virtual (venv), execute:
 
 ```bash
-python3 scripts/classification.py
+python3 scripts/classificador.py
 ```
 o que irá iniciar o programa, e o log do que a camerâ está classificando, poderá ser visto no terminal através dos logs.
 
-### Visualizando pelo navegador:
+### 6.2 -- Visualizando pelo navegador:
 
 Para ver no navegador, no raspberry pi, dentro do ambiente virtual. Execute:
 
 ```bash
-python3 scripts/classification_interface.py
+python3 scripts/classificador_interface.py
 ```
 depois, no seu navegador web de preferencia, na barra de url, digite:
 
@@ -202,15 +203,15 @@ http://<ip do raspberry pi>:1337
 > Substitua <ip do seu raspberry pi>, pelo ip real do seu raspberry pi
 
 
-## Integrando os dados com o grafana
+## 7 Integrando os dados com o grafana
 
-### Porque usar o grafana
+### 7.1 -- Porque usar o grafana
 
 o grafana é uma ferramente poderosa, que permite visualizar gráficos em tempo real, fazer alertas customizáveis, e definir quem pode receber os alertas e ver os gráfocos,
 sua introdução ao sistema é extremamente útil no monitoramento dos produtos.
 
 --- 
-### Instalação
+### 7.2 -- Instalação
 
 > [!WARNING]
 > Estamos considerando que está a fazer essa configuração no raspberry pi
@@ -241,7 +242,7 @@ sudo systemctl start alloy.service # Inicia o serviço caso não tenha iniciado 
 sudo systemctl status alloy.service # Verifica o status
 ```
 
-### Configuração
+### 7.3 -- Configuração
 Para começar, iremos criar variaveis de ambiente para o alloy, isso deixa a configuração mais organizada e legível.
 Acesse como super usuario:
 
@@ -278,7 +279,7 @@ sudo nano /etc/alloy/config.alloy
 
 e substitua oque tiver no arquivo por:
 
-```
+```text
 prometheus.scrape "node_exporter" {
   targets = [{ "__address__" = "localhost:9100" }]
   forward_to = [prometheus.remote_write.grafana_cloud.receiver]
@@ -314,7 +315,7 @@ e verifique o log do alloy, para ver se tudo está indo certo:
 sudo journalctl -u alloy -n 30 --no-pager
 ```
 
-## Visualizando os dados no grafana
+## 8 -- Visualizando os dados no grafana
 
 Com os passos anteriores feitos, podemos começar a fazer o seu dashboard no grafana.
 Escolha se prefere rodar `classificador.py` ou `classificador_interface`
@@ -346,25 +347,32 @@ e para ver o gráfico, selecione `Run Query`:
 Para criar seus próprios painéis (dashboards), pode-se ler a documentação oficial do grafana para isso:
 [Documentação oficial do grafana](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/create-dashboard/)
 
-## Cofirmação do resultado
+## 9 -- Cofirmação do resultado
 
 Visualização do projeto rodando:
 
 Resultado no terminal:
-{TODO: resu1}
 
 ---
 Resultado na web:
-{TODO: resu2}
+
 
 ---
 Graficos de demonstração em um painel(dashboard) no grafana:
-{TODO: resu3}
-{TODO: resu4}
-{TODO: resu5}
+
+<img width="1519" height="662" alt="resu1" src="https://github.com/user-attachments/assets/221882cd-4240-4dd5-9854-f7891d0fb56d" />
 
 ---
-## Diagrama de blocos
+<img width="1197" height="564" alt="resu2" src="https://github.com/user-attachments/assets/c375aef2-2f1b-4ccf-9ae2-8b6c8d350f40" />
+
+---
+<img width="1534" height="670" alt="resu3" src="https://github.com/user-attachments/assets/3404d226-2b3d-4791-88ac-11680b1d23bf" />
+
+---
+<img width="1535" height="657" alt="resu4" src="https://github.com/user-attachments/assets/ac71c9ba-dda2-485b-b387-ef65efc03451" />
+
+---
+## 10 -- Diagrama de blocos
 
 O diagrama de blocos desenvolvido ilustra as entradas, processamento e saídas do nosso sistema, considerando aspectos de hardware e software. A plataforma utilizada para desenvolvê-lo foi o Miro.
 
@@ -372,7 +380,7 @@ Como informações de entrada haverão apenas as capturas de imagem realizadas p
 Já no processamento são consideradas todas as operações realizadas após a captura até a formulação de dados de saída, sendo a inferência, a classificação e o cálculo das métricas, as principais operações dessa etapa.
 Por fim, como saída temos as informações expressas no dashboard, a notificação de email em caso de alto índice de passagem de itens defeituosos, a documentação do FastAPI e o sinal de alerta para desvio automático de itens a ser processado por outro dispositivo embarcado. 
 
-<img width="1029" height="1518" alt="diagrama de blocos represenando as entradas, processamento e saídas do nosso sistema" src="https://github.com/user-attachments/assets/a050302a-7d85-4d7e-8f2d-2a44df469123" />
+<img width="1056" height="1600" alt="diagrama de blocos represenando as entradas, processamento e saídas do nosso sistema" src="https://github.com/user-attachments/assets/eded66d5-f6e2-4575-ae73-ea1bd90b42d4" />
 
 ---
 
