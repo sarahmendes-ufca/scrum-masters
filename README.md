@@ -62,6 +62,7 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ## 2️. Arquitetura do Sistema
 
+```bash
 .
 ├── models
 │   └── modelfile.eim
@@ -70,7 +71,7 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
     ├── classificador_interface.py
     ├── classificador.py
     └── requirements.txt
-
+```
 ---
 ## 3. Componentes utilizados
 
