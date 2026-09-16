@@ -5,7 +5,7 @@
 ### 👤 Identificação da Equipe
 - **scrum-masters**
 - **repositório: https://github.com/sarahmendes-ufca/scrum-masters**
-- **GitHub dos Membros:** 
+- **GitHub dos Membros:*- 
   - José Dhonatan Fernandes de Almeida — [`@sudo-invers`](https://github.com/sudo-invers)
   - Letícia Maria dos Santos Dias — [`@leticia-software-engineer`](https://github.com/leticia-software-engineer)
   - Sarah Mendes Teles — [`@sarahmendes-ufca`](https://github.com/sarahmendes-ufca)
@@ -13,14 +13,33 @@
 ---
 
 ## 📌 Sumário
-1. [Visão Geral da Solução](#1-visão-geral-da-solução)
-2. [Arquitetura do Sistema](#2-arquitetura-do-sistema)
-3. [Componentes Utilizados na Simulação](#3-componentes-utilizados-na-simulação)
-4. [Pré-requisitos e Recursos](#4-pré-requisitos-e-recursos)
-5. [Dependências e Procedimento de Instalação](#5-dependências-e-procedimento-de-instalação)
-6. [Comandos e Procedimento para Execução](#7-comandos-e-procedimento-para-execução)
-7. [Confirmação do Resultado](#8-confirmação-do-resultado)
-8. [Diagrama de blocos](#9-diagrama-de-blocos)
+
+* [1. Visão Geral da Solução](#1-visão-geral-da-solução)
+* [2. Arquitetura do Sistema](#2-arquitetura-do-sistema)
+* [3. Componentes utilizados](#3-componentes-utilizados)
+* [4. Pré-requisitos e Recursos](#4-pré-requisitos-e-recursos)
+
+  * [4.1 Hardware, Dispositivos e Infraestrutura](#41-hardware-dispositivos-e-infraestrutura)
+  * [4.2 Software de Sistema e Drivers de Captura](#42-software-de-sistema-e-drivers-de-captura)
+* [5. Dependências e procedimento de instalação](#5-dependências-e-procedimento-de-instalação)
+
+  * [5.1 Linguagem e Frameworks Web / Servidores](#51-linguagem-e-frameworks-web--servidores)
+  * [5.2 Visão Computacional, IA e Processamento Matemático](#52-visão-computacional-ia-e-processamento-matemático)
+  * [5.3 MLOps, Engenharia de Dados e Observabilidade](#53-mlops-engenharia-de-dados-e-observabilidade)
+  * [5.4 Conteinerização, Rede e CI/CD](#54-conteinerização-rede-e-cicd)
+  * [5.5 Procedimento de Instalação e Configuração](#55-procedimento-de-instalação-e-configuração)
+* [6. Comandos e Procedimento para Execução](#6-comandos-e-procedimento-para-execução)
+
+  * [6.1 Visualização pelo terminal](#61-visualização-pelo-terminal)
+  * [6.2 Visualização pelo navegador](#62-visualização-pelo-navegador)
+  * [6.3 Utilização de vídeo pré-gravado](#63-utilização-de-vídeo-pré-gravado)
+  * [6.4 Utilização de imagem pré-gravada](#64-utilização-de-imagem-pré-gravada)
+* [7. Integrando os dados com o Grafana](#7-integrando-os-dados-com-o-grafana)
+
+  * [7.1 Instalação](#71-instalação)
+  * [7.2 Configuração](#72-configuração)
+* [8. Confirmação do resultado](#8-confirmação-do-resultado)
+* [9. Diagrama de blocos](#9-diagrama-de-blocos)
 
 ---
 
@@ -44,11 +63,13 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 ## 2️. Arquitetura do Sistema
 
 .
-├── classificador_interface.py
-├── classificador.py
-├── modelfile.eim
+├── models
+│   └── modelfile.eim
 ├── README.md
-└── requirements.txt
+└── scripts
+    ├── classificador_interface.py
+    ├── classificador.py
+    └── requirements.txt
 
 ---
 ## 3. Componentes utilizados
@@ -64,96 +85,110 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ### Hardware, Dispositivos e Infraestrutura
 
-- **Placa Principal:** Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
+- **Placa Principal:*- Raspberry Pi 5 (8 GB de RAM)  (ARM64) com conexão à internet.. (Plataformas alternativas compatíveis/projetadas: Gigabyte GA-SBCAP3350, Nvidia Jetson Nano, Banana Pi e ESP-32 com módulo câmera).
 
-- **Câmera:** Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
+- **Câmera:*- Módulo Câmera Raspberry Pi V1.3 (5 MP) com interface e cabo adaptador CSI.
 
-- **Alimentação:** Fonte oficial USB-C 27 W para Raspberry Pi 5.
+- **Alimentação:*- Fonte oficial USB-C 27 W para Raspberry Pi 5.
 
-- **Armazenamento:** Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
+- **Armazenamento:*- Cartão microSD (com sistema de arquivos Overlay FS para restrição de escrita).
 
 
 ### Software de Sistema e Drivers de Captura
 
-* **Sistema Operacional:** Raspberry Pi OS 64-bit (Debian Bookworm/Trixie).
+- **Sistema Operacional:** Raspberry Pi OS 64-bit (Debian Trixie).
 
-* **Drivers & Utilitários de Vídeo:** V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
+- **Drivers & Utilitários de Vídeo:** V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
 
 ---
-## 5. Dependências e procedimento de instalação
+## 5. Dependências
 
 
 ### Linguagem e Frameworks Web / Servidores
 
-* **Linguagem Base:** Python 3.11.
+- **Linguagem Base:** Python 3.11.
 
 
-* **Servidor e Framework REST:** FastAPI (API REST de inferência) e Uvicorn (servidor ASGI).
+- **Servidor e Framework REST:** FastAPI (API REST de inferência) e Uvicorn (servidor ASGI).
 
 
-* **Streaming de Vídeo:** Flask (micro-framework utilitário para stream MJPEG).
+- **Streaming de Vídeo:** Flask (micro-framework utilitário para stream MJPEG).
 
 
-* **Validação de Dados:** Pydantic.
+- **Validação de Dados:** Pydantic.
 
 
 
 ### Visão Computacional, IA e Processamento Matemático
 
-* **Detecção/IA:** Ultralytics YOLOv8 (modelo yolov8n.pt).
+- **Detecção/IA:** Ultralytics YOLOv8 (modelo yolov8n.pt).
 
 
-* **Framework DL:** PyTorch e Torchvision.
+- **Framework DL:** PyTorch e Torchvision.
 
 
-* **Processamento de Imagem:** OpenCV (opencv-python-headless), Pillow (PIL) e NumPy.
+- **Processamento de Imagem:** OpenCV (opencv-python-headless), Pillow (PIL) e NumPy.
 
 
 
 ### MLOps, Engenharia de Dados e Observabilidade
 
-* **Gestão de Dataset:** Roboflow (SaaS para anotação/augmentation).
+- **Gestão de Dataset:** Roboflow (SaaS para anotação/augmentation).
 
 
-* **Versionamento:** DVC (Data Version Control para modelos/dados), Git e GitHub.
+- **Versionamento:** DVC (Data Version Control para modelos/dados), Git e GitHub.
 
 
-* **Visualização/Dashboards:** Grafana.
+- **Visualização/Dashboards:** Grafana.
 
 
 
 ### Conteinerização, Rede e CI/CD
 
-* **Contêineres:** Docker e Docker Compose.
+- **Contêineres:** Docker e Docker Compose.
 
 
-* **Compilação Cruzada:** Docker Buildx e QEMU.
+- **Compilação Cruzada:** Docker Buildx e QEMU.
 
 
-* **Registro de Imagens:** GitHub Container Registry (GHCR).
+- **Registro de Imagens:** GitHub Container Registry (GHCR).
 
 
-* **Rede / VPN Mesh:** Tailscale (acesso SSH e integração CI/CD).
+- **Rede / VPN Mesh:** Tailscale (acesso SSH e integração CI/CD).
 
 
-* **CI/CD:** GitHub Actions.
+- **CI/CD:** GitHub Actions.
 
 
-* **Testes e Qualidade:** Pytest, TestClient (FastAPI), Ruff (linter) e Logs Estruturados em JSON.
+- **Testes e Qualidade:** Pytest, TestClient (FastAPI), Ruff (linter) e Logs Estruturados em JSON.
 
-### Procedimento de Instalação e Configuração
+## Procedimento de Instalação e Configuração
 
-> Para saber porque cada dependencia é necessária, acesse {TODO: Adicionar pagina da wiki com dependencias e explicações depois}
-
-#### Instalando as dependencias do sistema
+### Instalando as dependencias do sistema
 No raspberry pi, em um terminal:
 ```bash
 sudo apt update
 sudo apt install -y python3-opencv python3-picamera2 portaudio19-dev
 ```
 
-#### Instalando as dependencias do projeto
+#### motivo de cada dependência
+- python3-opencv: 
+  - Capturar/processar frames
+  - Desenhar informações sobre os frames
+  - Fazer pré-processamento antes da inferência
+
+- python3-picamera2:
+  - Biblioteca usada para controlar a câmera do Raspberry Pi
+
+- portaudio19-dev:
+  - Não utilizado, mas é dependência de python3-picamera2
+
+### Instalando as dependencias do projeto
 No raspberry pi, crie um ambiente virtual:
+> [!WARNING]
+> Daqui em diante, sempre execute os comando estando dentro do ambiente virtual
+> Instalar depedencias com pip fora de um, pode acarretar a problemas sérios no sistema operacional
+
 ```bash
 python3 -m venv .venv
 ```
@@ -161,11 +196,24 @@ e depois ative ele:
 ```bash
 source .venv/bin/activate
 ```
+> [!WARNING]
+> Apenas instale os comando estando dentro do ambiente virtual
+> Instalar depedencias com pip fora de um, pode acarretar a problemas sérios no sistema operacional
 
-## 6. Comandos e Procedimento para Execução
+após isso, instalamos as dependências do projeto:
 
-### Executando:
-#### Visualização pelo terminal:
+```bash
+pip install -r requirements.txt
+```
+
+> Se não possuir pip instalado no seu raspberry, instale com:
+> ```bash
+>  sudo apt install python3-pip
+> ```
+
+## 6. Procedimento para Execução
+
+### Visualização pelo terminal:
 
 com o repositório, com todas as dependências instaladas e dentro do ambiente virtual (venv), execute:
 
@@ -174,7 +222,7 @@ python3 classification.py
 ```
 o que irá iniciar o programa, e o log do que a camerâ está vendo, poderá ser visto no terminal através de um log.
 
-#### Visualizando pelo navegador:
+### Visualizando pelo navegador:
 
 Para ver no navegador, no raspberry pi, dentro do ambiente virtual:
 
@@ -188,7 +236,7 @@ http://<ip do raspberry pi>:8000
 ```
 - Substitua <ip do seu raspberry pi>, pelo ip real do seu raspberry pi
 
-#### Utilizar um vídeo pré-gravado para visualizar
+### Utilizar um vídeo pré-gravado para visualizar
 Se preferir utilizar um vídeo pré-feito para testar, no terminal:
 ```bash
 cd <caminho da pasta do projeto>
@@ -201,7 +249,7 @@ python3 stream/video_visualize.py --input <caminho do vídeo no seu dispositivo>
 - substitua o "<caminho do vídeo no seu dispositivo>", pelo lugar aonde está o video que será analisado;
 - substitua o " <nome do vídeo após a inferência>", para indicar o nome e local aonde será salvo o vídeo;
 
-##### Vendo o resultado:
+#### Vendo o resultado:
 Caso não possa ver o video pelo seu raspberry (Por exemplo, está no modo somente terminal).
 Para visualizar o video, precisamos transferir do seu raspberry pi para sua máquina local.
 Na sua maquina, abra o terminal, e digite:
@@ -209,7 +257,7 @@ Na sua maquina, abra o terminal, e digite:
 scp <username do raspberry>@<ip do raspberry>:~/<local aonde foi salvo o video> <Aonde será enviado o video no seu computador>
 ```
 
-#### Utilizar uma imagemm pré-feita para visualizar: 
+### Utilizar uma imagem pré-feita para visualizar: 
 
 Também é possível fazer o teste com imagens pré-feitas, basta usar o comando:
 ```bash
@@ -219,7 +267,7 @@ python3 stream/image_visualize model=runs/<Nome do modelo>/weights/best.pt sourc
 - substitua <caminho da imagem>, pelo nome e caminho da imagem a ser utilizado;
 ---
 
-##### Vendo o resultado:
+#### Vendo o resultado:
 Caso não possa ver a imagem pelo seu raspberry (Por exemplo, está no modo somente terminal).
 Para visualizar a imagem, precisamos transferir do seu raspberry pi para sua máquina local.
 Na sua maquina, abra o terminal, e digite:
@@ -332,6 +380,31 @@ e verifique o log do alloy, para ver se tudo está indo certo:
 sudo journalctl -u alloy -n 30 --no-pager
 ```
 
+## Visualizando os dados no grafana
+
+Com os passos anteriores feitos, podemos começar a fazer o seu dashboard no grafana.
+Escolha se prefere rodar `classificador.py` ou `classificador_interface`
+O projeto inclui por padrão, as seguintes métricas para o grafana:
+
+> Mais métricas podem ser adicionadas manualmente modificando os arquvivos `classificador.py` ou `classificador_interface.py` (oque estiver usando)
+
+- `classificador_produtos_avaliados_total`
+- `classificador_logs_por_classificacao_total`
+
+Serão as métricas acima que iramos visualiar, para poder fazer isso acesse:
+{TODO: grafana_explore1}
+{TODO: grafana_explore2}
+
+e coloque uma métrica a ser avaliada:
+{TODO: grafana_explore3}
+
+e para ver o grafico, selecion 'Run Query':
+
+{TODO: grafana_explore4}
+
+Para criar seus próprios paineis (dashboards), pode-se ler a documentação oficial do grafana para isso:
+[Documentação oficial do grafana](https://grafana.com/docs/grafana/latest/visualizations/dashboards/build-dashboards/create-dashboard/)
+
 ## 8. Cofirmação do resultado
 
 
@@ -344,7 +417,7 @@ Como informações de entrada haverão apenas as capturas de imagem realizadas p
 Já no processamento são consideradas todas as operações realizadas após a captura até a formulação de dados de saída, sendo a inferência, a classificação e o cálculo das métricas, as principais operações dessa etapa.
 Por fim, como saída temos as informações expressas no dashboard, a notificação de email em caso de alto índice de passagem de itens defeituosos, a documentação do FastAPI e o sinal de alerta para desvio automático de itens a ser processado por outro dispositivo embarcado. 
 
-<img width="1029" height="1518" alt="Meu primeiro board" src="https://github.com/user-attachments/assets/a050302a-7d85-4d7e-8f2d-2a44df469123" />
+<img width="1029" height="1518" alt="diagrama de blocos represenando as entradas, processamento e saídas do nosso sistema" src="https://github.com/user-attachments/assets/a050302a-7d85-4d7e-8f2d-2a44df469123" />
 
 ---
 
