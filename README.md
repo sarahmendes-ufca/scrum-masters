@@ -1,5 +1,3 @@
-# scrum-masters
-
 # 📦 TCC CENÁRIO 3: Visão Computacional para Detecção de Defeitos em Embalagens de Produtos
 
 ### 👤 Identificação da Equipe
@@ -37,13 +35,13 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ```bash
 
-├── models
-│   └── modelfile.eim
-├── README.md
+├── models                   
+│   └── modelfile.eim                # É o modelo de machine learning compilado
+├── README.md                        # Documentação do projeto com instruções de execução
 └── scripts
-    ├── classificador_interface.py
-    ├── classificador.py
-    └── requirements.txt
+    ├── classificador_interface.py   # Script estruturado para gerenciar a interface de usuário para facilitar a interação e a visualização dos resultados obtidos pelo classificador.   
+    ├── classificador.py             #script de execução principal que gerencia a câmera nativa da Raspberry Pi 5 via Picamera2 e realiza o loop de inferência de visão computacional em tempo real
+    └── requirements.txt             # Arquivo de dependências necessárias para executar o projeto
 ```
 
 ---
