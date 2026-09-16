@@ -14,32 +14,32 @@
 
 ## 📌 Sumário
 
-* [1. Visão Geral da Solução](#1-visão-geral-da-solução)
-* [2. Arquitetura do Sistema](#2-arquitetura-do-sistema)
-* [3. Componentes utilizados](#3-componentes-utilizados)
-* [4. Pré-requisitos e Recursos](#4-pré-requisitos-e-recursos)
+- [1. Visão Geral da Solução](#1-visão-geral-da-solução)
+- [2. Arquitetura do Sistema](#2-arquitetura-do-sistema)
+- [3. Componentes utilizados](#3-componentes-utilizados)
+- [4. Pré-requisitos e Recursos](#4-pré-requisitos-e-recursos)
 
-  * [4.1 Hardware, Dispositivos e Infraestrutura](#41-hardware-dispositivos-e-infraestrutura)
-  * [4.2 Software de Sistema e Drivers de Captura](#42-software-de-sistema-e-drivers-de-captura)
-* [5. Dependências e procedimento de instalação](#5-dependências-e-procedimento-de-instalação)
+  - [4.1 Hardware, Dispositivos e Infraestrutura](#41-hardware-dispositivos-e-infraestrutura)
+  - [4.2 Software de Sistema e Drivers de Captura](#42-software-de-sistema-e-drivers-de-captura)
+- [5. Dependências e procedimento de instalação](#5-dependências-e-procedimento-de-instalação)
 
-  * [5.1 Linguagem e Frameworks Web / Servidores](#51-linguagem-e-frameworks-web--servidores)
-  * [5.2 Visão Computacional, IA e Processamento Matemático](#52-visão-computacional-ia-e-processamento-matemático)
-  * [5.3 MLOps, Engenharia de Dados e Observabilidade](#53-mlops-engenharia-de-dados-e-observabilidade)
-  * [5.4 Conteinerização, Rede e CI/CD](#54-conteinerização-rede-e-cicd)
-  * [5.5 Procedimento de Instalação e Configuração](#55-procedimento-de-instalação-e-configuração)
-* [6. Comandos e Procedimento para Execução](#6-comandos-e-procedimento-para-execução)
+  - [5.1 Linguagem e Frameworks Web / Servidores](#51-linguagem-e-frameworks-web--servidores)
+  - [5.2 Visão Computacional, IA e Processamento Matemático](#52-visão-computacional-ia-e-processamento-matemático)
+  - [5.3 MLOps, Engenharia de Dados e Observabilidade](#53-mlops-engenharia-de-dados-e-observabilidade)
+  - [5.4 Conteinerização, Rede e CI/CD](#54-conteinerização-rede-e-cicd)
+  - [5.5 Procedimento de Instalação e Configuração](#55-procedimento-de-instalação-e-configuração)
+- [6. Comandos e Procedimento para Execução](#6-comandos-e-procedimento-para-execução)
 
-  * [6.1 Visualização pelo terminal](#61-visualização-pelo-terminal)
-  * [6.2 Visualização pelo navegador](#62-visualização-pelo-navegador)
-  * [6.3 Utilização de vídeo pré-gravado](#63-utilização-de-vídeo-pré-gravado)
-  * [6.4 Utilização de imagem pré-gravada](#64-utilização-de-imagem-pré-gravada)
-* [7. Integrando os dados com o Grafana](#7-integrando-os-dados-com-o-grafana)
+  - [6.1 Visualização pelo terminal](#61-visualização-pelo-terminal)
+  - [6.2 Visualização pelo navegador](#62-visualização-pelo-navegador)
+  - [6.3 Utilização de vídeo pré-gravado](#63-utilização-de-vídeo-pré-gravado)
+  - [6.4 Utilização de imagem pré-gravada](#64-utilização-de-imagem-pré-gravada)
+- [7. Integrando os dados com o Grafana](#7-integrando-os-dados-com-o-grafana)
 
-  * [7.1 Instalação](#71-instalação)
-  * [7.2 Configuração](#72-configuração)
-* [8. Confirmação do resultado](#8-confirmação-do-resultado)
-* [9. Diagrama de blocos](#9-diagrama-de-blocos)
+  - [7.1 Instalação](#71-instalação)
+  - [7.2 Configuração](#72-configuração)
+- [8. Confirmação do resultado](#8-confirmação-do-resultado)
+- [9. Diagrama de blocos](#9-diagrama-de-blocos)
 
 ---
 
@@ -96,71 +96,64 @@ Diante desse cenário, este trabalho propõe uma solução prática, segura e de
 
 ### Software de Sistema e Drivers de Captura
 
-- **Sistema Operacional:** Raspberry Pi OS 64-bit (Debian Trixie).
+- **Sistema Operacional:*- Raspberry Pi OS 64-bit (Debian Trixie).
 
-- **Drivers & Utilitários de Vídeo:** V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
+- **Drivers & Utilitários de Vídeo:*- V4L2 (Video4Linux2), libcamera e pacote rpicam-apps (rpicam-vid, rpicam-still).
 
 ---
 ## 5. Dependências
-
 
 ### Linguagem e Frameworks Web / Servidores
 
 - **Linguagem Base:** Python 3.11.
 
+- **Servidor Web:** Flask, utilizado para disponibilizar a interface web e o streaming MJPEG da câmera.
 
-- **Servidor e Framework REST:** FastAPI (API REST de inferência) e Uvicorn (servidor ASGI).
+- **Servidor de Métricas:** `prometheus-client`, utilizado para expor as métricas do classificador em um endpoint HTTP para coleta pelo Grafana Alloy.
 
+### Visão Computacional, IA e Processamento de Imagem
 
-- **Streaming de Vídeo:** Flask (micro-framework utilitário para stream MJPEG).
+- **Inferência de IA:** Edge Impulse Linux SDK (`edge_impulse_linux`), utilizado para carregar e executar o modelo `.eim` diretamente na Raspberry Pi 5.
 
+- **Controle da Câmera:** Picamera2, utilizado para configurar e capturar imagens da câmera da Raspberry Pi.
 
-- **Validação de Dados:** Pydantic.
+- **Processamento de Imagem:** OpenCV (`python3-opencv`), utilizado para conversão de formatos de imagem, desenho das caixas delimitadoras e codificação dos frames em JPEG para o streaming.
 
-
-
-### Visão Computacional, IA e Processamento Matemático
-
-- **Detecção/IA:** Ultralytics YOLOv8 (modelo yolov8n.pt).
-
-
-- **Framework DL:** PyTorch e Torchvision.
-
-
-- **Processamento de Imagem:** OpenCV (opencv-python-headless), Pillow (PIL) e NumPy.
-
-
+- **Processamento Numérico:** NumPy, utilizado no processamento dos frames capturados pela câmera.
 
 ### MLOps, Engenharia de Dados e Observabilidade
 
-- **Gestão de Dataset:** Roboflow (SaaS para anotação/augmentation).
+- **Desenvolvimento e Treinamento do Modelo:** Edge Impulse, utilizado para preparação do dataset, treinamento, validação e exportação do modelo de classificação/detecção.
 
+- **Gestão e Anotação do Dataset:** Roboflow, utilizado na preparação e anotação das imagens utilizadas no desenvolvimento do modelo.
 
-- **Versionamento:** DVC (Data Version Control para modelos/dados), Git e GitHub.
+- **Versionamento de Código:** Git e GitHub.
 
+- **Coleta de Métricas:** Prometheus Client, responsável por disponibilizar as métricas produzidas pelo classificador.
 
-- **Visualização/Dashboards:** Grafana.
+- **Agente de Coleta:** Grafana Alloy, responsável por coletar as métricas expostas pelo classificador e encaminhá-las ao Grafana Cloud.
 
-
+- **Visualização e Monitoramento:** Grafana, utilizado para criação dos dashboards e acompanhamento das métricas do sistema.
 
 ### Conteinerização, Rede e CI/CD
 
-- **Contêineres:** Docker e Docker Compose.
+- **Contêineres:** Docker e Docker Compose, utilizados para execução e organização dos serviços que fazem parte da aplicação.
 
-
-- **Compilação Cruzada:** Docker Buildx e QEMU.
-
+- **Compilação Multiplataforma:** Docker Buildx e QEMU, utilizados quando necessário para construção de imagens compatíveis com a arquitetura ARM64 da Raspberry Pi 5.
 
 - **Registro de Imagens:** GitHub Container Registry (GHCR).
 
+- **Rede / VPN Mesh:** Tailscale, utilizado para acesso remoto à Raspberry Pi e comunicação entre os dispositivos da infraestrutura.
 
-- **Rede / VPN Mesh:** Tailscale (acesso SSH e integração CI/CD).
+- **CI/CD:** GitHub Actions, utilizado para automação dos processos de versionamento e integração/entrega do projeto.
 
+### Testes e Qualidade
 
-- **CI/CD:** GitHub Actions.
+- **Testes:** Pytest, quando utilizado para testes automatizados dos componentes Python do projeto.
 
+- **Linting:** Ruff, quando utilizado para análise estática e padronização do código Python.
 
-- **Testes e Qualidade:** Pytest, TestClient (FastAPI), Ruff (linter) e Logs Estruturados em JSON.
+- **Logs:** Logs utilizando a saída padrão da aplicação para acompanhamento da execução, inferências e alertas do classificador.
 
 ## Procedimento de Instalação e Configuração
 
